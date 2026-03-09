@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const clashRoutes = require('./routes/clash');
+const { avviaGlobalPolling } = require('./services/globalPolling');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -28,4 +29,5 @@ app.get('/ip', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Royal Arena backend in ascolto su porta ${PORT}`);
+  avviaGlobalPolling();
 });

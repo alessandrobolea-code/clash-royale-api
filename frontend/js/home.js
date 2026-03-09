@@ -10,6 +10,8 @@ let timerInterval = null;
 document.addEventListener('DOMContentLoaded', async () => {
   await caricaGiocatori();
   await controllaStatoTorneo();
+  await caricaPartiteRecenti();
+  ascoltaPartiteRecenti();
 });
 
 // ── Caricamento giocatori da Supabase ────────────────────────────────────────
@@ -185,4 +187,70 @@ function aggiungiPartita(match, indice) {
     <span class="crown">👑 ${w}</span>
   `;
   lista.appendChild(li);
+}
+
+// ── Partite recenti tra amici (global polling) ────────────────────────────────
+
+async function caricaPartiteRecenti() {
+  const { data } = await db
+    .from('battles')
+    .select('*, player1:player1_id(username), player2:player2_id(username), winner:winner_id(username)')
+    .order('played_at', { ascending: false })
+    .limit(20);
+
+  const lista = document.getElementById('lista-recenti');
+  lista.innerHTML = '';
+
+  if (!data?.length) {
+    lista.innerHTML = '<li class="nessuna-partita">Nessuna partita ancora rilevata…</li>';
+    return;
+  }
+
+  data.forEach(m => aggiungiPartitaRecente(m));
+}
+
+function ascoltaPartiteRecenti() {
+  db.channel('battles-global')
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'battles',
+    }, async (payload) => {
+      // Carica con join per avere i nomi
+      const { data } = await db
+        .from('battles')
+        .select('*, player1:player1_id(username), player2:player2_id(username), winner:winner_id(username)')
+        .eq('id', payload.new.id)
+        .single();
+      if (data) {
+        const lista = document.getElementById('lista-recenti');
+        // Rimuovi placeholder se presente
+        lista.querySelector('.nessuna-partita')?.remove();
+        aggiungiPartitaRecente(data, true);
+      }
+    })
+    .subscribe();
+}
+
+function aggiungiPartitaRecente(match, inCima = false) {
+  const lista = document.getElementById('lista-recenti');
+  const p1 = match.player1?.username || '?';
+  const p2 = match.player2?.username || '?';
+  const w = match.winner?.username || '?';
+  const corone = `${match.crowns_p1}-${match.crowns_p2}`;
+  const tipo = match.battle_type === 'tripla' ? '⚔️' : '🗡️';
+  const data = new Date(match.played_at).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+  const li = document.createElement('li');
+  li.className = 'partita-riga';
+  li.innerHTML = `
+    <span class="num">${tipo}</span>
+    <span class="match">${p1} vs ${p2}</span>
+    <span class="risultato">${corone}</span>
+    <span class="crown">👑 ${w}</span>
+  `;
+  li.title = data;
+
+  if (inCima) lista.prepend(li);
+  else lista.appendChild(li);
 }
