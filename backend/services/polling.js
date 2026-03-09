@@ -1,10 +1,12 @@
 const axios = require('axios');
 const { createClient } = require('@supabase/supabase-js');
 
-const db = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
+// Client lazy — si crea solo quando viene usato, evita crash al boot
+let _db = null;
+function getDb() {
+  if (!_db) _db = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+  return _db;
+}
 
 const CR_API_KEY = process.env.CR_API_KEY;
 const CR_BASE = 'https://api.clashroyale.com/v1';
@@ -51,7 +53,7 @@ function fermaPolling(tournamentId) {
 async function eseguiCiclo(tournamentId) {
   try {
     // 1. Leggi dati torneo
-    const { data: torneo, error: errTorneo } = await db
+    const { data: torneo, error: errTorneo } = await getDb()
       .from('tournaments')
       .select('*, players')
       .eq('id', tournamentId)
@@ -70,13 +72,13 @@ async function eseguiCiclo(tournamentId) {
     }
 
     // 2. Leggi giocatori del torneo
-    const { data: players } = await db
+    const { data: players } = await getDb()
       .from('players')
       .select('id, cr_tag')
       .in('id', torneo.players);
 
     // 3. Leggi cr_battle_id già registrate per evitare duplicati
-    const { data: partiteEsistenti } = await db
+    const { data: partiteEsistenti } = await getDb()
       .from('tournament_matches')
       .select('cr_battle_id')
       .eq('tournament_id', tournamentId);
@@ -115,7 +117,7 @@ async function eseguiCiclo(tournamentId) {
         const winnerId = myCrowns > oppCrowns ? p1Id : p2Id;
 
         // Salva partita
-        const { error: errInsert } = await db.from('tournament_matches').insert({
+        const { error: errInsert } = await getDb().from('tournament_matches').insert({
           tournament_id: tournamentId,
           player1_id: p1Id,
           player2_id: p2Id,
@@ -142,7 +144,7 @@ async function eseguiCiclo(tournamentId) {
       const elapsed = Date.now() - (ultimaPartita.get(tournamentId) || Date.now());
       if (elapsed >= INATTIVITA_MS) {
         console.log(`[polling] Inattività 10min per torneo ${tournamentId} → paused`);
-        await db.from('tournaments').update({ status: 'paused' }).eq('id', tournamentId);
+        await getDb().from('tournaments').update({ status: 'paused' }).eq('id', tournamentId);
         fermaPolling(tournamentId);
       }
     }
@@ -176,7 +178,7 @@ async function fetchBattlelog(encodedTag) {
 // ── Verifica fine torneo ──────────────────────────────────────────────────────
 
 async function verificaFine(tournamentId, torneo) {
-  const { data: partite } = await db
+  const { data: partite } = await getDb()
     .from('tournament_matches')
     .select('*')
     .eq('tournament_id', tournamentId);
@@ -191,7 +193,7 @@ async function verificaFine(tournamentId, torneo) {
     : validaFormato3(partite, torneo.players);
 
   const nuovoStatus = valido ? 'finished' : 'invalid';
-  await db.from('tournaments').update({
+  await getDb().from('tournaments').update({
     status: nuovoStatus,
     finished_at: new Date().toISOString(),
   }).eq('id', tournamentId);
@@ -266,7 +268,7 @@ function validaFormato3(partite, playerIds) {
 async function calcolaPodio(tournamentId, partite, playerIds, n) {
   // Aggiorna battles (storico globale partite)
   for (const m of partite) {
-    await db.from('battles').upsert({
+    await getDb().from('battles').upsert({
       player1_id: m.player1_id,
       player2_id: m.player2_id,
       winner_id: m.winner_id,
