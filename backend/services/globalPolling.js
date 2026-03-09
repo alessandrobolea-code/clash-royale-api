@@ -1,5 +1,5 @@
 // Polling globale — gira sempre in background dal boot del server.
-// Rileva tutte le partite tra i giocatori registrati e le salva in `battles`.
+// Rileva TUTTE le partite dei giocatori registrati e le salva in `battles`.
 
 const axios = require('axios');
 const { createClient } = require('@supabase/supabase-js');
@@ -17,7 +17,7 @@ const INTERVALLO_MS = 30_000;
 
 function avviaGlobalPolling() {
   console.log('[global] Polling globale avviato (ogni 30s)');
-  eseguiCicloGlobale(); // subito al boot
+  eseguiCicloGlobale();
   setInterval(eseguiCicloGlobale, INTERVALLO_MS);
 }
 
@@ -32,7 +32,6 @@ async function eseguiCicloGlobale() {
     if (error || !players?.length) return;
 
     const tagToId = Object.fromEntries(players.map(p => [p.cr_tag, p.id]));
-    const tagSet = new Set(players.map(p => p.cr_tag));
 
     // Leggi battle_id già salvati per evitare duplicati
     const { data: esistenti } = await db
@@ -45,19 +44,18 @@ async function eseguiCicloGlobale() {
       const battaglie = await fetchBattlelog(tag);
 
       for (const battle of battaglie) {
-        const oppTag = battle.opponent?.[0]?.tag;
-        if (!oppTag || !tagSet.has(oppTag)) continue;
-
         const tipo = rilevaTipo(battle);
         if (!tipo) continue;
 
-        const battleId = generaBattleId(battle);
+        const battleId = generaBattleId(battle, player.cr_tag);
         if (idSalvati.has(battleId)) continue;
 
+        const oppTag = battle.opponent?.[0]?.tag;
+        const oppName = battle.opponent?.[0]?.name || '?';
         const myCrowns = battle.team?.[0]?.crowns ?? 0;
         const oppCrowns = battle.opponent?.[0]?.crowns ?? 0;
         const p1Id = tagToId[player.cr_tag];
-        const p2Id = tagToId[oppTag];
+        const p2Id = oppTag ? tagToId[oppTag] || null : null;
         const winnerId = myCrowns > oppCrowns ? p1Id : p2Id;
 
         const { error: errInsert } = await db.from('battles').insert({
@@ -69,11 +67,13 @@ async function eseguiCicloGlobale() {
           battle_type: tipo,
           played_at: new Date(battle.battleTime).toISOString(),
           cr_battle_id: battleId,
+          opponent_tag: p2Id ? null : oppTag,
+          opponent_name: p2Id ? null : oppName,
         });
 
         if (!errInsert) {
           idSalvati.add(battleId);
-          console.log(`[global] Partita salvata: ${player.cr_tag} vs ${oppTag} (${tipo})`);
+          console.log(`[global] ${player.cr_tag} vs ${oppTag || '?'} (${tipo})`);
         }
       }
     }
@@ -101,18 +101,17 @@ async function fetchBattlelog(encodedTag) {
 
 function rilevaTipo(battle) {
   const mode = battle.gameMode?.name || '';
-  if (mode.includes('Ladder') || mode.includes('1v1') || mode === 'PvP') return '1v1';
-  if (mode.includes('TripleDraft') || mode.includes('Triple')) return 'tripla';
-  // Accetta qualsiasi modalità 1v1 standard
+  if (mode.includes('Triple') || mode.includes('TripleDraft')) return 'tripla';
   if (battle.team?.length === 1 && battle.opponent?.length === 1) return '1v1';
   return null;
 }
 
-function generaBattleId(battle) {
+function generaBattleId(battle, playerTag) {
   const t = battle.battleTime || '';
-  const me = battle.team?.[0]?.tag || '';
   const opp = battle.opponent?.[0]?.tag || '';
-  return `${t}_${[me, opp].sort().join('_')}`;
+  // Ordina i tag così la stessa partita non viene salvata due volte
+  // (una volta dal punto di vista di ciascun giocatore registrato)
+  return `${t}_${[playerTag, opp].sort().join('_')}`;
 }
 
 module.exports = { avviaGlobalPolling };

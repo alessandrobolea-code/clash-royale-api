@@ -194,7 +194,7 @@ function aggiungiPartita(match, indice) {
 async function caricaPartiteRecenti() {
   const { data } = await db
     .from('battles')
-    .select('*, player1:player1_id(username), player2:player2_id(username), winner:winner_id(username)')
+    .select('*, player1:player1_id(username), player2:player2_id(username), winner:winner_id(username), opponent_name, opponent_tag')
     .order('played_at', { ascending: false })
     .limit(20);
 
@@ -219,7 +219,7 @@ function ascoltaPartiteRecenti() {
       // Carica con join per avere i nomi
       const { data } = await db
         .from('battles')
-        .select('*, player1:player1_id(username), player2:player2_id(username), winner:winner_id(username)')
+        .select('*, player1:player1_id(username), player2:player2_id(username), winner:winner_id(username), opponent_name, opponent_tag')
         .eq('id', payload.new.id)
         .single();
       if (data) {
@@ -235,8 +235,8 @@ function ascoltaPartiteRecenti() {
 function aggiungiPartitaRecente(match, inCima = false) {
   const lista = document.getElementById('lista-recenti');
   const p1 = match.player1?.username || '?';
-  const p2 = match.player2?.username || '?';
-  const w = match.winner?.username || '?';
+  const p2 = match.player2?.username || match.opponent_name || '?';
+  const w = match.winner?.username || (match.winner_id === null ? match.opponent_name : '?') || '?';
   const corone = `${match.crowns_p1}-${match.crowns_p2}`;
   const tipo = match.battle_type === 'tripla' ? '⚔️' : '🗡️';
   const data = new Date(match.played_at).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
