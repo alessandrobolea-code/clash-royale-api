@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Royal Arena</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <a href="classifiche.html">🏆 Classifiche</a>
+    <div class="avatar" title="Profilo">⚔️</div>
+  </header>
+
+  <!-- ── VISTA SETUP (visibile quando non c'è torneo attivo) ── -->
+  <div id="vista-setup">
+
+    <!-- Selezione giocatori -->
+    <section class="card">
+      <p class="card-title">Partecipanti</p>
+      <div class="chip-grid" id="chip-container">
+        <!-- Popolato da home.js -->
+        <p style="color:var(--text-muted); font-size:15px;">Caricamento giocatori…</p>
+      </div>
+    </section>
+
+    <!-- Tipo partita -->
+    <section class="card">
+      <p class="card-title">Tipo partita</p>
+      <div class="toggle-group">
+        <button class="toggle-btn active" id="btn-1v1">1v1 Normale</button>
+        <button class="toggle-btn" id="btn-tripla">Tripla Strategica</button>
+      </div>
+    </section>
+
+    <!-- Bottone Avvia -->
+    <div class="avvia-wrap">
+      <button class="btn-avvia" id="btn-avvia" disabled>AVVIA</button>
+      <p class="hint-avvia" id="hint-avvia">Seleziona 3 o 4 giocatori</p>
+    </div>
+
+  </div>
+  <!-- /vista-setup -->
+
+  <!-- ── VISTA ATTIVA (visibile durante il torneo) ── -->
+  <div id="vista-attiva" class="hidden">
+
+    <section class="card">
+      <!-- Header con dot animato e timer -->
+      <div class="stato-header">
+        <div class="dot-live"></div>
+        <span class="stato-label">Rilevamento</span>
+        <span class="timer" id="timer">00:00</span>
+      </div>
+
+      <!-- Lista partite in tempo reale -->
+      <ul class="lista-partite" id="lista-partite">
+        <li class="nessuna-partita">In attesa della prima partita…</li>
+      </ul>
+    </section>
+
+    <!-- Bottone Annulla -->
+    <button class="btn-annulla" id="btn-annulla">Annulla torneo</button>
+
+  </div>
+  <!-- /vista-attiva -->
+
+</div>
+
+<!-- Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- JS app (ordine importante) -->
+<script src="js/config.js"></script>
+<script src="js/supabase.js"></script>
+<script src="js/api.js"></script>
+<script src="js/home.js"></script>
+
+</body>
+</html>
