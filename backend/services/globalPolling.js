@@ -4,10 +4,11 @@
 const axios = require('axios');
 const { createClient } = require('@supabase/supabase-js');
 
-const db = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
+let _db = null;
+function getDb() {
+  if (!_db) _db = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+  return _db;
+}
 
 const CR_API_KEY = process.env.CR_API_KEY;
 const CR_BASE = 'https://api.clashroyale.com/v1';
@@ -25,7 +26,7 @@ function avviaGlobalPolling() {
 
 async function eseguiCicloGlobale() {
   try {
-    const { data: players, error } = await db
+    const { data: players, error } = await getDb()
       .from('players')
       .select('id, cr_tag, username');
 
@@ -34,7 +35,7 @@ async function eseguiCicloGlobale() {
     const tagToId = Object.fromEntries(players.map(p => [p.cr_tag, p.id]));
 
     // Leggi battle_id già salvati per evitare duplicati
-    const { data: esistenti } = await db
+    const { data: esistenti } = await getDb()
       .from('battles')
       .select('cr_battle_id');
     const idSalvati = new Set((esistenti || []).map(b => b.cr_battle_id));
@@ -58,7 +59,7 @@ async function eseguiCicloGlobale() {
         const p2Id = oppTag ? tagToId[oppTag] || null : null;
         const winnerId = myCrowns > oppCrowns ? p1Id : p2Id;
 
-        const { error: errInsert } = await db.from('battles').insert({
+        const { error: errInsert } = await getDb().from('battles').insert({
           player1_id: p1Id,
           player2_id: p2Id,
           winner_id: winnerId,
