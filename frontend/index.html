@@ -1,97 +1,365 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Royal Arena</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clash Tracker ⚔️</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+  import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, onSnapshot, query, orderBy, deleteDoc }
+    from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  // ════════════════════════════════════════════
+  // ⚙️  CONFIGURA QUI LE TUE CHIAVI
+  // ════════════════════════════════════════════
+  const FIREBASE_CONFIG = {
+    apiKey: "LA_TUA_API_KEY",
+    authDomain: "IL_TUO_PROJECT.firebaseapp.com",
+    projectId: "IL_TUO_PROJECT_ID",
+    storageBucket: "IL_TUO_PROJECT.appspot.com",
+    messagingSenderId: "IL_TUO_SENDER_ID",
+    appId: "IL_TUO_APP_ID"
+  };
+  const PROXY_URL = "https://IL-TUO-PROXY.onrender.com";
+  // ════════════════════════════════════════════
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/style.css" />
+  const app = initializeApp(FIREBASE_CONFIG);
+  const db = getFirestore(app);
+
+  let players = [];
+  let tournaments = [];
+  let currentTournamentId = null;
+
+  const encodeTag = tag => encodeURIComponent(tag.startsWith('#') ? tag : '#' + tag);
+  const qs = id => document.getElementById(id);
+  const toast = (msg, type = 'info') => {
+    const t = document.createElement('div');
+    t.className = `toast toast-${type}`;
+    t.textContent = msg;
+    document.getElementById('toasts').appendChild(t);
+    setTimeout(() => t.classList.add('show'), 10);
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3000);
+  };
+
+  async function fetchPlayer(tag) {
+    const res = await fetch(`${PROXY_URL}/cr/players/${encodeTag(tag)}`);
+    if (!res.ok) throw new Error(`Giocatore non trovato (${res.status})`);
+    return res.json();
+  }
+
+  async function loadPlayers() {
+    const snap = await getDocs(collection(db, 'players'));
+    players = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderPlayers();
+    renderPlayerSelects();
+  }
+
+  async function addPlayer() {
+    const tagInput = qs('newPlayerTag');
+    const tag = tagInput.value.trim().toUpperCase().replace(/O/g, '0');
+    if (!tag) return;
+    tagInput.disabled = true;
+    toast('Recupero dati da Clash Royale...', 'info');
+    try {
+      const data = await fetchPlayer(tag);
+      await addDoc(collection(db, 'players'), {
+        tag: data.tag, name: data.name, trophies: data.trophies,
+        expLevel: data.expLevel, arena: data.arena?.name || '—', addedAt: Date.now()
+      });
+      tagInput.value = '';
+      toast(`${data.name} aggiunto! 🎉`, 'success');
+      loadPlayers();
+    } catch (e) { toast('Errore: ' + e.message, 'error'); }
+    tagInput.disabled = false;
+  }
+
+  async function refreshPlayer(id, tag) {
+    try {
+      const data = await fetchPlayer(tag);
+      await updateDoc(doc(db, 'players', id), {
+        trophies: data.trophies, expLevel: data.expLevel, arena: data.arena?.name || '—'
+      });
+      toast(`Aggiornato ✓`, 'success');
+      loadPlayers();
+    } catch (e) { toast('Errore aggiornamento', 'error'); }
+  }
+
+  async function removePlayer(id, name) {
+    if (!confirm(`Rimuovere ${name}?`)) return;
+    await deleteDoc(doc(db, 'players', id));
+    toast(`${name} rimosso`, 'info');
+    loadPlayers();
+  }
+
+  function renderPlayers() {
+    const grid = qs('playersGrid');
+    if (!players.length) { grid.innerHTML = '<p class="empty-state">Nessun giocatore ancora. Aggiungine uno! 👇</p>'; return; }
+    grid.innerHTML = players.sort((a,b) => b.trophies - a.trophies).map((p,i) => `
+      <div class="player-card" style="animation-delay:${i*0.05}s">
+        <div class="player-rank">#${i+1}</div>
+        <div class="player-info">
+          <span class="player-name">${p.name}</span>
+          <span class="player-tag">${p.tag}</span>
+          <span class="player-arena">${p.arena}</span>
+        </div>
+        <div class="player-trophies">🏆 ${p.trophies.toLocaleString()}</div>
+        <div class="player-actions">
+          <button class="btn-icon" onclick="window.refreshPlayer('${p.id}','${p.tag}')">↻</button>
+          <button class="btn-icon btn-danger" onclick="window.removePlayer('${p.id}','${p.name}')">✕</button>
+        </div>
+      </div>`).join('');
+  }
+
+  async function loadTournaments() {
+    const snap = await getDocs(query(collection(db, 'tournaments'), orderBy('createdAt', 'desc')));
+    tournaments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderTournamentList();
+  }
+
+  async function createTournament() {
+    const name = qs('tournamentName').value.trim();
+    if (!name) return toast('Inserisci un nome per il torneo', 'error');
+    const selected = [...document.querySelectorAll('.player-checkbox:checked')]
+      .map(cb => players.find(p => p.id === cb.value)).filter(Boolean);
+    if (selected.length < 2) return toast('Seleziona almeno 2 giocatori', 'error');
+    const ref = await addDoc(collection(db, 'tournaments'), {
+      name, createdAt: Date.now(), status: 'active', matches: [],
+      players: selected.map(p => ({ id: p.id, tag: p.tag, name: p.name, wins: 0, losses: 0, points: 0 }))
+    });
+    qs('tournamentName').value = '';
+    document.querySelectorAll('.player-checkbox').forEach(cb => cb.checked = false);
+    toast(`Torneo "${name}" creato! ⚔️`, 'success');
+    loadTournaments();
+    setTimeout(() => openTournament(ref.id), 500);
+  }
+
+  async function openTournament(id) {
+    currentTournamentId = id;
+    await loadTournaments();
+    const t = tournaments.find(t => t.id === id);
+    if (!t) return;
+    qs('tournamentView').style.display = 'block';
+    qs('tournamentViewName').textContent = t.name;
+    renderTournament(t);
+    qs('tournamentView').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  async function recordMatch() {
+    const p1 = qs('matchP1').value, p2 = qs('matchP2').value, winner = qs('matchWinner').value;
+    if (!p1 || !p2 || !winner || p1 === p2) return toast('Seleziona due giocatori diversi e un vincitore', 'error');
+    const t = tournaments.find(t => t.id === currentTournamentId);
+    const loser = winner === p1 ? p2 : p1;
+    const updatedPlayers = t.players.map(p => {
+      if (p.id === winner) return { ...p, wins: p.wins+1, points: p.points+3 };
+      if (p.id === loser) return { ...p, losses: p.losses+1 };
+      return p;
+    });
+    await updateDoc(doc(db, 'tournaments', currentTournamentId), {
+      matches: [...(t.matches||[]), { p1, p2, winner, loser, date: Date.now() }],
+      players: updatedPlayers
+    });
+    toast('Risultato salvato! 🎮', 'success');
+    openTournament(currentTournamentId);
+  }
+
+  function renderTournamentList() {
+    const list = qs('tournamentList');
+    if (!tournaments.length) { list.innerHTML = '<p class="empty-state">Nessun torneo ancora. Creane uno! ⚔️</p>'; return; }
+    list.innerHTML = tournaments.map(t => `
+      <div class="tournament-item" onclick="window.openTournament('${t.id}')">
+        <span class="t-name">${t.name}</span>
+        <span class="t-meta">${t.players.length} giocatori · ${(t.matches||[]).length} partite</span>
+        <span class="t-badge">${t.status === 'active' ? '🟢 Attivo' : '✅ Concluso'}</span>
+      </div>`).join('');
+  }
+
+  function renderTournament(t) {
+    const sorted = [...t.players].sort((a,b) => b.points - a.points || b.wins - a.wins);
+    qs('tournamentStandings').innerHTML = `
+      <table class="standings-table">
+        <thead><tr><th>#</th><th>Giocatore</th><th>V</th><th>P</th><th>Pts</th></tr></thead>
+        <tbody>${sorted.map((p,i) => `
+          <tr class="${['first','second','third'][i]||''}">
+            <td>${['🥇','🥈','🥉'][i]||i+1}</td>
+            <td>${p.name}</td><td>${p.wins}</td><td>${p.losses}</td><td><b>${p.points}</b></td>
+          </tr>`).join('')}</tbody>
+      </table>`;
+    const opts = t.players.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    ['matchP1','matchP2','matchWinner'].forEach((id,i) => {
+      qs(id).innerHTML = `<option value="">— ${['Giocatore 1','Giocatore 2','Vincitore'][i]} —</option>` + opts;
+    });
+    const matches = (t.matches||[]).slice().reverse();
+    qs('matchHistory').innerHTML = matches.length ? matches.map(m => {
+      const [p1,p2,win] = [m.p1,m.p2,m.winner].map(id => t.players.find(p=>p.id===id));
+      return `<div class="match-row">
+        <span class="${m.winner===m.p1?'mw':'ml'}">${p1?.name||'?'}</span>
+        <span class="vs">VS</span>
+        <span class="${m.winner===m.p2?'mw':'ml'}">${p2?.name||'?'}</span>
+        <span class="match-badge">🏆 ${win?.name||'?'}</span>
+      </div>`;
+    }).join('') : '<p class="empty-state">Nessuna partita registrata</p>';
+  }
+
+  function renderPlayerSelects() {
+    qs('playerCheckboxes').innerHTML = players.length
+      ? players.map(p => `<label class="checkbox-label"><input type="checkbox" class="player-checkbox" value="${p.id}"><span>${p.name} <small>${p.tag}</small></span></label>`).join('')
+      : '<p style="color:var(--dim);font-size:13px">Aggiungi prima dei giocatori sopra</p>';
+  }
+
+  window.refreshPlayer = refreshPlayer;
+  window.removePlayer = removePlayer;
+  window.openTournament = openTournament;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    qs('addPlayerBtn').addEventListener('click', addPlayer);
+    qs('newPlayerTag').addEventListener('keydown', e => e.key === 'Enter' && addPlayer());
+    qs('createTournamentBtn').addEventListener('click', createTournament);
+    qs('recordMatchBtn').addEventListener('click', recordMatch);
+    loadPlayers();
+    loadTournaments();
+  });
+</script>
+<style>
+  :root{--gold:#f5c518;--gold2:#e8a800;--red:#e03030;--blue:#2f7ef5;--green:#28c76f;--bg:#0b0d12;--card:#12151d;--card2:#181c27;--border:#1f2535;--text:#cdd5e0;--dim:#4e5a6e;--white:#f0f4f8;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 10% 0%,rgba(245,197,24,.06) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 90% 100%,rgba(47,126,245,.05) 0%,transparent 60%);pointer-events:none;z-index:0;}
+  .container{max-width:1000px;margin:0 auto;padding:32px 20px;position:relative;z-index:1;}
+  header{display:flex;align-items:center;gap:16px;margin-bottom:48px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+  .header-icon{font-size:42px;filter:drop-shadow(0 0 16px rgba(245,197,24,.6));}
+  header h1{font-size:32px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--white);}
+  header p{color:var(--dim);font-size:12px;font-family:'Share Tech Mono',monospace;letter-spacing:2px;margin-top:2px;}
+  .section{margin-bottom:48px;}
+  .section-title{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+  .section-title::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--border),transparent);}
+  .panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;}
+  .input-row{display:flex;gap:10px;}
+  input[type="text"]{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--white);font-family:'Share Tech Mono',monospace;font-size:14px;padding:10px 14px;border-radius:8px;outline:none;transition:border-color .2s,box-shadow .2s;letter-spacing:1px;}
+  input[type="text"]:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(245,197,24,.1);}
+  input::placeholder{color:var(--dim);}
+  .btn{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0b0d12;border:none;border-radius:8px;padding:10px 20px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:transform .15s,box-shadow .15s;white-space:nowrap;}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(245,197,24,.3);}
+  .btn-blue{background:linear-gradient(135deg,#2f7ef5,#1a5fc8);color:#fff;}
+  .btn-blue:hover{box-shadow:0 4px 20px rgba(47,126,245,.3);}
+  .btn-green{background:linear-gradient(135deg,var(--green),#1da55a);color:#fff;}
+  .btn-green:hover{box-shadow:0 4px 20px rgba(40,199,111,.3);}
+  .btn-icon{background:var(--card2);border:1px solid var(--border);color:var(--dim);border-radius:6px;padding:4px 8px;font-size:14px;cursor:pointer;transition:all .15s;}
+  .btn-icon:hover{color:var(--white);border-color:var(--gold);}
+  .btn-danger:hover{color:var(--red);border-color:var(--red);}
+  .players-grid{display:flex;flex-direction:column;gap:8px;margin-top:16px;}
+  .player-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:12px;animation:slideIn .3s ease both;transition:border-color .2s;}
+  .player-card:hover{border-color:rgba(245,197,24,.3);}
+  @keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+  .player-rank{font-family:'Share Tech Mono',monospace;color:var(--gold);font-size:13px;min-width:28px;}
+  .player-info{flex:1;display:flex;flex-direction:column;gap:2px;}
+  .player-name{font-size:17px;font-weight:600;color:var(--white);}
+  .player-tag{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim);}
+  .player-arena{font-size:12px;color:var(--blue);}
+  .player-trophies{font-size:15px;font-weight:600;color:var(--gold);white-space:nowrap;}
+  .player-actions{display:flex;gap:6px;}
+  .t-create-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media(max-width:640px){.t-create-grid{grid-template-columns:1fr;}}
+  .checkboxes-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .checkbox-label{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;cursor:pointer;transition:border-color .15s;font-size:14px;}
+  .checkbox-label:hover{border-color:var(--gold);}
+  .checkbox-label input{accent-color:var(--gold);width:14px;height:14px;}
+  .checkbox-label small{color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:10px;}
+  .tournament-list{display:flex;flex-direction:column;gap:8px;}
+  .tournament-item{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;}
+  .tournament-item:hover{border-color:var(--blue);background:rgba(47,126,245,.05);}
+  .t-name{font-size:17px;font-weight:600;color:var(--white);flex:1;}
+  .t-meta{font-size:12px;color:var(--dim);font-family:'Share Tech Mono',monospace;}
+  .t-badge{font-size:12px;}
+  #tournamentView{display:none;background:var(--card);border:1px solid var(--gold);border-radius:14px;padding:24px;margin-top:32px;}
+  #tournamentViewName{font-size:22px;font-weight:700;color:var(--gold);margin-bottom:20px;letter-spacing:2px;}
+  .t-view-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  @media(max-width:700px){.t-view-grid{grid-template-columns:1fr;}}
+  .standings-table{width:100%;border-collapse:collapse;font-size:15px;}
+  .standings-table th{text-align:left;padding:8px 10px;font-size:11px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;border-bottom:1px solid var(--border);}
+  .standings-table td{padding:10px 10px;border-bottom:1px solid rgba(31,37,53,.6);}
+  .standings-table tr.first td{color:var(--gold);}
+  .standings-table tr.second td{color:#c0c0c0;}
+  .standings-table tr.third td{color:#cd7f32;}
+  .match-form{display:flex;flex-direction:column;gap:10px;}
+  select{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;padding:10px 12px;border-radius:8px;outline:none;width:100%;cursor:pointer;transition:border-color .2s;}
+  select:focus{border-color:var(--blue);}
+  .subsection-title{font-size:12px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;margin-bottom:12px;}
+  .match-history{display:flex;flex-direction:column;gap:6px;}
+  .match-row{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:8px;padding:10px 14px;font-size:14px;}
+  .mw{color:var(--green);font-weight:600;flex:1;}
+  .ml{color:var(--dim);flex:1;}
+  .vs{color:var(--border);font-size:12px;font-weight:700;}
+  .match-badge{color:var(--gold);font-size:13px;white-space:nowrap;}
+  #toasts{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:999;}
+  .toast{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:14px;font-weight:600;opacity:0;transform:translateX(20px);transition:all .3s ease;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:280px;}
+  .toast.show{opacity:1;transform:none;}
+  .toast-success{border-color:var(--green);color:var(--green);}
+  .toast-error{border-color:var(--red);color:var(--red);}
+  .toast-info{border-color:var(--blue);color:var(--blue);}
+  .empty-state{color:var(--dim);font-size:14px;text-align:center;padding:24px;line-height:1.8;}
+  .label{font-size:12px;color:var(--dim);letter-spacing:1px;margin-bottom:6px;display:block;}
+</style>
 </head>
 <body>
-
-<div class="app">
-
-  <!-- Topbar -->
-  <header class="topbar">
-    <a href="classifiche.html">🏆 Classifiche</a>
-    <div class="avatar" title="Profilo">⚔️</div>
+<div id="toasts"></div>
+<div class="container">
+  <header>
+    <div class="header-icon">⚔️</div>
+    <div><h1>Clash Tracker</h1><p>TOURNAMENT MANAGER · CLASH ROYALE</p></div>
   </header>
-
-  <!-- ── VISTA SETUP (visibile quando non c'è torneo attivo) ── -->
-  <div id="vista-setup">
-
-    <!-- Selezione giocatori -->
-    <section class="card">
-      <p class="card-title">Partecipanti</p>
-      <div class="chip-grid" id="chip-container">
-        <!-- Popolato da home.js -->
-        <p style="color:var(--text-muted); font-size:15px;">Caricamento giocatori…</p>
+  <section class="section">
+    <div class="section-title">👥 Giocatori</div>
+    <div class="panel">
+      <div class="input-row">
+        <input type="text" id="newPlayerTag" placeholder="Tag giocatore (es: #ABC123)" maxlength="20">
+        <button class="btn" id="addPlayerBtn">+ Aggiungi</button>
       </div>
-    </section>
-
-    <!-- Tipo partita -->
-    <section class="card">
-      <p class="card-title">Tipo partita</p>
-      <div class="toggle-group">
-        <button class="toggle-btn active" id="btn-1v1">1v1 Normale</button>
-        <button class="toggle-btn" id="btn-tripla">Tripla Strategica</button>
-      </div>
-    </section>
-
-    <!-- Bottone Avvia -->
-    <div class="avvia-wrap">
-      <button class="btn-avvia" id="btn-avvia" disabled>AVVIA</button>
-      <p class="hint-avvia" id="hint-avvia">Seleziona 3 o 4 giocatori</p>
+      <div class="players-grid" id="playersGrid"><p class="empty-state">Nessun giocatore ancora. Aggiungine uno! 👇</p></div>
     </div>
-
-  </div>
-  <!-- /vista-setup -->
-
-  <!-- ── VISTA ATTIVA (visibile durante il torneo) ── -->
-  <div id="vista-attiva" class="hidden">
-
-    <section class="card">
-      <!-- Header con dot animato e timer -->
-      <div class="stato-header">
-        <div class="dot-live"></div>
-        <span class="stato-label">Rilevamento</span>
-        <span class="timer" id="timer">00:00</span>
-      </div>
-
-      <!-- Lista partite in tempo reale -->
-      <ul class="lista-partite" id="lista-partite">
-        <li class="nessuna-partita">In attesa della prima partita…</li>
-      </ul>
-    </section>
-
-    <!-- Bottone Annulla -->
-    <button class="btn-annulla" id="btn-annulla">Annulla torneo</button>
-
-  </div>
-  <!-- /vista-attiva -->
-
-  <!-- ── PARTITE RECENTI (sempre visibile) ── -->
-  <section class="card">
-    <p class="card-title">Partite recenti</p>
-    <ul class="lista-partite" id="lista-recenti">
-      <li class="nessuna-partita">Nessuna partita ancora rilevata…</li>
-    </ul>
   </section>
-
+  <section class="section">
+    <div class="section-title">🏆 Crea Torneo</div>
+    <div class="panel">
+      <div class="t-create-grid">
+        <div>
+          <label class="label">Nome del torneo</label>
+          <input type="text" id="tournamentName" placeholder="es: Torneo Agosto 2025">
+        </div>
+        <div>
+          <label class="label">Seleziona partecipanti</label>
+          <div class="checkboxes-grid" id="playerCheckboxes"><p style="color:var(--dim);font-size:13px">Aggiungi prima dei giocatori sopra</p></div>
+        </div>
+      </div>
+      <div style="margin-top:16px"><button class="btn btn-blue" id="createTournamentBtn">⚔️ Crea Torneo</button></div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="section-title">📋 Tornei</div>
+    <div class="tournament-list" id="tournamentList"><p class="empty-state">Nessun torneo ancora. Creane uno! ⚔️</p></div>
+  </section>
+  <div id="tournamentView">
+    <div id="tournamentViewName">—</div>
+    <div class="t-view-grid">
+      <div>
+        <div class="subsection-title">🏆 Classifica</div>
+        <div id="tournamentStandings"></div>
+      </div>
+      <div>
+        <div class="subsection-title">🎮 Registra Partita</div>
+        <div class="match-form">
+          <select id="matchP1"><option value="">— Giocatore 1 —</option></select>
+          <select id="matchP2"><option value="">— Giocatore 2 —</option></select>
+          <select id="matchWinner"><option value="">— Vincitore —</option></select>
+          <button class="btn btn-green" id="recordMatchBtn">✓ Salva Risultato</button>
+        </div>
+        <div style="margin-top:24px">
+          <div class="subsection-title">📜 Storico</div>
+          <div class="match-history" id="matchHistory"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-
-<!-- Supabase CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- JS app (ordine importante) -->
-<script src="js/config.js"></script>
-<script src="js/supabase.js"></script>
-<script src="js/api.js"></script>
-<script src="js/home.js"></script>
-
 </body>
 </html>
