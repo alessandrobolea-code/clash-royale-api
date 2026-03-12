@@ -29,13 +29,14 @@
     }
     .player-list-card {
       flex: 1;
+      min-height: 0;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       background: rgba(10, 15, 46, 0.6);
       border: 1px solid var(--bg3);
       border-radius: var(--radius);
       padding: 10px;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
     }
     .logo span { font-size: 22px; }
 
@@ -115,30 +116,33 @@
       gap: 4px;
     }
 
-    /* Bottone AVVIA circolare */
+    /* Bottone AVVIA */
     .start-wrap {
-      display: flex;
-      justify-content: center;
-      margin-top: 36px;
+      flex-shrink: 0;
     }
 
     .btn-start {
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      background: var(--gold);
+      width: 100%;
+      height: 58px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #ffe066 0%, #f5a800 60%, #e08c00 100%);
       border: none;
-      color: var(--bg);
+      border-bottom: 4px solid #9a5c00;
+      color: #6b3500;
       font-family: 'Cinzel Decorative', cursive;
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 900;
-      letter-spacing: 1px;
+      letter-spacing: 2px;
       cursor: pointer;
-      box-shadow: 0 0 24px rgba(245,200,66,.35), 0 4px 16px rgba(0,0,0,.4);
-      transition: transform .1s, box-shadow .1s;
+      box-shadow: 0 4px 16px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.45);
+      transition: transform .1s, box-shadow .1s, border-bottom-width .1s;
       -webkit-tap-highlight-color: transparent;
     }
-    .btn-start:active { transform: scale(.94); box-shadow: 0 0 12px rgba(245,200,66,.2); }
+    .btn-start:active {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.4);
+    }
     .btn-start:disabled { opacity: .5; cursor: not-allowed; }
 
     /* Status bar */
