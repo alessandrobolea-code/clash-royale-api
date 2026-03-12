@@ -1,7 +1,7 @@
 // Service Worker — Royal Arena
 // Cache-first per i file statici, network-first per le API
 
-const CACHE_NAME = 'royal-arena-v5';
+const CACHE_NAME = 'royal-arena-v6';
 
 const STATIC_ASSETS = [
   './',
@@ -42,9 +42,8 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // Le chiamate a Supabase e al proxy CR vanno sempre su rete
+  // Le chiamate a Supabase e al proxy CR: non intercettare, lascia al browser
   if (url.hostname.includes('supabase') || url.hostname.includes('royaleapi')) {
-    event.respondWith(fetch(event.request));
     return;
   }
 
