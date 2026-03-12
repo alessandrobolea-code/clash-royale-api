@@ -108,9 +108,7 @@
 <body>
 
   <header>
-    <a href="index.html" class="nav-link">← ARENA</a>
     <div class="logo">Statistiche</div>
-    <a href="classifiche.html" class="nav-link">CLASSIF.</a>
   </header>
 
   <main>
@@ -124,6 +122,23 @@
   <script src="js/supabase.js"></script>
   <script src="js/api.js"></script>
   <script src="js/statistiche.js"></script>
+
+  <nav class="bottom-nav">
+    <a href="classifiche.html" class="bn-item">
+      <img src="images/ui/social.png" class="bn-icon">
+      <span>CLASSIF.</span>
+    </a>
+    <a href="index.html" class="bn-item bn-center">
+      <div class="bn-center-ring">
+        <img src="images/ui/battle.png" class="bn-icon-center">
+      </div>
+      <span>ARENA</span>
+    </a>
+    <a href="statistiche.html" class="bn-item active">
+      <img src="images/ui/leaderboard.png" class="bn-icon">
+      <span>STATS</span>
+    </a>
+  </nav>
 
 </body>
 </html>
