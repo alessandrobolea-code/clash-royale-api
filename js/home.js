@@ -23,6 +23,7 @@ const POINTS_BY_PLACE = { 1: 3, 2: 2, 3: 1, 4: 0 };
 // ============================================================
 
 let standingsMap = {}; // player_id → points
+let trophiesMap  = {}; // player_id → CR trophies
 
 async function init() {
   try {
@@ -32,6 +33,14 @@ async function init() {
       getStandings().catch(() => []),
     ]);
     standings.forEach(s => { standingsMap[s.player_id] = s.points; });
+
+    // Fetch coppe CR in parallelo (best effort, ignora errori)
+    const profileResults = await Promise.allSettled(
+      allPlayers.map(p => getPlayerProfile(p.cr_tag))
+    );
+    profileResults.forEach((r, i) => {
+      if (r.status === 'fulfilled') trophiesMap[allPlayers[i].id] = r.value.trophies ?? 0;
+    });
 
     if (active) {
       activeTournament = active;
@@ -59,18 +68,16 @@ async function init() {
 function renderIdle() {
   const app = document.getElementById('app');
   const playerList = allPlayers.map(p => {
-    const pts = standingsMap[p.id] ?? 0;
-    const initial = p.username.charAt(0).toUpperCase();
+    const trophies = trophiesMap[p.id] ?? '—';
     return `
       <button class="player-card ${selectedPlayerIds.has(p.id) ? 'selected' : ''}"
               onclick="togglePlayer(${p.id})"
               data-id="${p.id}">
-        <div class="player-avatar">${initial}</div>
         <div class="player-info">
           <div class="player-name">${p.username}</div>
           <div class="player-subtag">${p.cr_tag}</div>
         </div>
-        <div class="player-pts">🏆 ${pts}</div>
+        <div class="player-pts">🏆 ${trophies}</div>
       </button>
     `;
   }).join('');

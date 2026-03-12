@@ -142,16 +142,24 @@ async function getTournamentsHistory() {
 
 // Parsa il formato data di CR: "20241215T143022.000Z" → Date
 function parseCRDate(battleTime) {
-  return new Date(battleTime.replace(
-    /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(\..*)?Z?$/,
-    '$1-$2-$3T$4:$5:$6${7:-}Z'
-  ).replace('${7:-}', battleTime.includes('.') ? battleTime.slice(15) : '.000Z'));
+  const m = battleTime.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/);
+  if (!m) return new Date(battleTime);
+  return new Date(`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}.000Z`);
 }
 
 // ID univoco per una partita (deterministico, basato sui tag)
 function makeBattleId(battleTime, teamTags, opponentTags) {
   const allTags = [...teamTags, ...opponentTags].map(t => t.replace('#', '')).sort();
   return `${battleTime}_${allTags.join('_')}`;
+}
+
+async function getPlayerProfile(crTag) {
+  const tag = crTag.replace('#', '');
+  const res = await fetch(`${CR_PROXY_URL}/players/%23${tag}`, {
+    headers: { Authorization: `Bearer ${CR_API_KEY}` },
+  });
+  if (!res.ok) throw new Error(`Profile HTTP ${res.status} per ${crTag}`);
+  return res.json();
 }
 
 async function getBattlelog(crTag) {
