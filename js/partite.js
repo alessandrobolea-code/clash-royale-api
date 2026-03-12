@@ -136,11 +136,9 @@ async function trySaveBattle(battle, ourPlayerTag) {
 
     const ourCrowns = ourSide.reduce((s, p) => s + (p.crowns ?? 0), 0);
     const oppCrowns = oppSide.reduce((s, p) => s + (p.crowns ?? 0), 0);
-    const ourWon    = ourCrowns > oppCrowns;
 
     const player1_id = regOur[0].id;
     const player2_id = regOpp.length > 0 ? regOpp[0].id : null;
-    const winner_id  = ourWon ? player1_id : (player2_id ?? null);
 
     const allTags = [...battle.team, ...battle.opponent]
       .map(p => p.tag.replace('#', '')).sort();
@@ -149,9 +147,8 @@ async function trySaveBattle(battle, ourPlayerTag) {
     await db.from('battles').insert({
       player1_id,
       player2_id,
-      winner_id,
-      crowns_p1: ourWon ? ourCrowns : oppCrowns,
-      crowns_p2: ourWon ? oppCrowns : ourCrowns,
+      crowns_p1: ourCrowns,
+      crowns_p2: oppCrowns,
       battle_type: 'amichevole',
       played_at: parseCRDate(battle.battleTime).toISOString(),
       cr_battle_id,
@@ -198,11 +195,9 @@ function renderBattleRow(battle, ourPlayerTag) {
 
   const ourCrowns = ourSide.reduce((s, p) => s + (p.crowns ?? 0), 0);
   const oppCrowns = oppSide.reduce((s, p) => s + (p.crowns ?? 0), 0);
-  const won = ourCrowns > oppCrowns;
 
   return `
-    <div class="battle-row ${won ? 'battle-win' : 'battle-loss'}">
-      <div class="battle-result-badge">${won ? 'V' : 'S'}</div>
+    <div class="battle-row">
       <div class="battle-info">
         <div class="battle-players">
           <span class="our-side">${ourNames}</span>
@@ -233,12 +228,6 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-function parseCRDate(battleTime) {
-  const m = battleTime.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/);
-  if (!m) return new Date(battleTime);
-  return new Date(`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}.000Z`);
 }
 
 // ============================================================
