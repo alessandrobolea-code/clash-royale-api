@@ -1,14 +1,13 @@
 // Service Worker — Royal Arena
 // Cache-first per i file statici, network-first per le API
 
-const CACHE_NAME = 'royal-arena-v13';
+const CACHE_NAME = 'royal-arena-v14';
 
 const STATIC_ASSETS = [
   './',
   './index.html',
   './classifiche.html',
   './statistiche.html',
-  './partite.html',
   './manifest.json',
   './js/config.js',
   './js/supabase.js',
@@ -16,7 +15,6 @@ const STATIC_ASSETS = [
   './js/home.js',
   './js/classifiche.js',
   './js/statistiche.js',
-  './js/partite.js',
   './css/style.css',
   './images/background.jpg',
   './images/Clash-Royale-Font/You Blockhead.ttf',
