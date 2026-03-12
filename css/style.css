@@ -18,7 +18,7 @@
 
 html, body {
   min-height: 100%;
-  background: var(--bg);
+  background: var(--bg) url('../images/background.jpg') center center / cover fixed;
   color: var(--text);
   font-family: 'Crimson Text', Georgia, serif;
   font-size: 18px;
@@ -196,6 +196,55 @@ main {
   color: var(--red);
   text-align: center;
   padding: 20px 0;
+}
+
+/* ============================================================
+   BATTLE ROWS (usate in partite + classifiche)
+   ============================================================ */
+.battles-list { display: flex; flex-direction: column; gap: 8px; }
+
+.battle-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg2);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  border-left: 4px solid transparent;
+}
+.battle-win  { border-left-color: var(--green); }
+.battle-loss { border-left-color: var(--red); }
+
+.battle-result-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 700;
+  width: 22px;
+  flex-shrink: 0;
+  text-align: center;
+}
+.battle-win  .battle-result-badge { color: var(--green); }
+.battle-loss .battle-result-badge { color: var(--red); }
+
+.battle-info { flex: 1; min-width: 0; }
+
+.battle-players {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.our-side  { color: var(--text); font-weight: 600; }
+.battle-vs { color: var(--muted); font-size: 13px; }
+.opp-side  { color: var(--muted); }
+
+.battle-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--muted);
 }
 
 /* ============================================================

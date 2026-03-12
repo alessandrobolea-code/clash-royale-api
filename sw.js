@@ -1,7 +1,7 @@
 // Service Worker — Royal Arena
 // Cache-first per i file statici, network-first per le API
 
-const CACHE_NAME = 'royal-arena-v6';
+const CACHE_NAME = 'royal-arena-v7';
 
 const STATIC_ASSETS = [
   './',
@@ -18,6 +18,7 @@ const STATIC_ASSETS = [
   './js/statistiche.js',
   './js/partite.js',
   './css/style.css',
+  './images/background.jpg',
 ];
 
 // Installa e metti in cache i file statici
