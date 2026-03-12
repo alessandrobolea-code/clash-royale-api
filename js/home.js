@@ -369,20 +369,13 @@ async function poll() {
 function isBattleValid(battle, tournament, participantTagMap) {
   const battleDate = parseCRDate(battle.battleTime);
   const cutoff = new Date(new Date(tournament.started_at) - 2 * 60_000);
-  if (battleDate < cutoff) {
-    console.log('[torneo] scartata per data:', battle.battleTime, '< cutoff', cutoff.toISOString());
-    return false;
-  }
+  if (battleDate < cutoff) return false;
 
   const allTags = [
     ...battle.team.map(p => p.tag.replace('#', '').toUpperCase()),
     ...battle.opponent.map(p => p.tag.replace('#', '').toUpperCase()),
   ];
-  const valid = allTags.every(tag => participantTagMap[tag]);
-  if (!valid) {
-    console.log('[torneo] scartata per tag non partecipante:', allTags, 'partecipanti:', Object.keys(participantTagMap));
-  }
-  return valid;
+  return allTags.every(tag => participantTagMap[tag]);
 }
 
 // ============================================================
