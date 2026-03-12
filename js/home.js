@@ -22,10 +22,16 @@ const POINTS_BY_PLACE = { 1: 3, 2: 2, 3: 1, 4: 0 };
 // INIT
 // ============================================================
 
+let standingsMap = {}; // player_id → points
+
 async function init() {
   try {
-    allPlayers = await getPlayers();
-    const active = await getActiveTournament();
+    [allPlayers] = await Promise.all([getPlayers()]);
+    const [active, standings] = await Promise.all([
+      getActiveTournament(),
+      getStandings().catch(() => []),
+    ]);
+    standings.forEach(s => { standingsMap[s.player_id] = s.points; });
 
     if (active) {
       activeTournament = active;
@@ -36,7 +42,6 @@ async function init() {
         renderActive();
         startPolling();
       } else {
-        // status: paused
         renderPaused();
       }
     } else {
@@ -53,21 +58,29 @@ async function init() {
 
 function renderIdle() {
   const app = document.getElementById('app');
-  const playerGrid = allPlayers.map(p => `
-    <button class="chip ${selectedPlayerIds.has(p.id) ? 'selected' : ''}"
-            onclick="togglePlayer(${p.id})"
-            data-id="${p.id}">
-      ${p.username}
-    </button>
-  `).join('');
+  const playerList = allPlayers.map(p => {
+    const pts = standingsMap[p.id] ?? 0;
+    const initial = p.username.charAt(0).toUpperCase();
+    return `
+      <button class="player-card ${selectedPlayerIds.has(p.id) ? 'selected' : ''}"
+              onclick="togglePlayer(${p.id})"
+              data-id="${p.id}">
+        <div class="player-avatar">${initial}</div>
+        <div class="player-info">
+          <div class="player-name">${p.username}</div>
+          <div class="player-subtag">${p.cr_tag}</div>
+        </div>
+        <div class="player-pts">🏆 ${pts}</div>
+      </button>
+    `;
+  }).join('');
 
   app.innerHTML = `
     <div class="idle-view">
       <div class="section-label">GIOCATORI</div>
-      <div class="player-grid">
-        ${playerGrid || '<p class="empty-msg">Nessun giocatore registrato</p>'}
+      <div class="player-list">
+        ${playerList || '<p class="empty-msg">Nessun giocatore registrato</p>'}
       </div>
-
       <div class="start-wrap">
         <button class="btn-start" onclick="startTournament()">AVVIA</button>
       </div>
@@ -195,8 +208,7 @@ function togglePlayer(id) {
     }
     selectedPlayerIds.add(id);
   }
-  // Aggiorna solo i chip senza re-render completo
-  document.querySelectorAll('.chip').forEach(btn => {
+  document.querySelectorAll('.player-card').forEach(btn => {
     const btnId = parseInt(btn.dataset.id);
     btn.classList.toggle('selected', selectedPlayerIds.has(btnId));
   });
