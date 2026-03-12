@@ -368,10 +368,11 @@ async function poll() {
 
 function isBattleValid(battle, tournament, participantTagMap) {
   // Accetta qualsiasi tipo di amichevole (1v1, 2v2, ecc.)
-  // Filtra solo per: data successiva all'inizio del torneo
+  // Filtra solo per: data non precedente di oltre 2 min all'inizio del torneo
   //                  e tutti i giocatori sono partecipanti
   const battleDate = parseCRDate(battle.battleTime);
-  if (battleDate <= new Date(tournament.started_at)) return false;
+  const cutoff = new Date(new Date(tournament.started_at) - 2 * 60_000);
+  if (battleDate < cutoff) return false;
 
   const allTags = [
     ...battle.team.map(p => p.tag.replace('#', '').toUpperCase()),
