@@ -6,68 +6,43 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0a0f2e">
-  <title>Classifiche — Royal Arena</title>
+  <title>Partite — Royal Arena</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="images/ui/icon.png">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    /* Leaderboard */
-    .leaderboard { display: flex; flex-direction: column; gap: 8px; }
-
-    .leaderboard-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: var(--bg2);
-      border-radius: var(--radius);
-      padding: 14px 18px;
-      border: 1px solid var(--bg3);
-    }
-
-    .leaderboard-row.rank-1 { border-color: var(--gold); box-shadow: 0 0 14px rgba(245,200,66,.15); }
-    .leaderboard-row.rank-2 { border-color: #aaa; }
-    .leaderboard-row.rank-3 { border-color: #c87d3e; }
-
-    .lb-rank { font-size: 22px; width: 32px; flex-shrink: 0; text-align: center; }
-    .lb-name { flex: 1; font-family: 'Cinzel', serif; font-size: 17px; }
-    .lb-pts  { font-family: 'Cinzel', serif; font-size: 16px; color: var(--gold); }
-
-    /* Storico */
-    .storico-list { display: flex; flex-direction: column; gap: 16px; }
-
-    .tournament-card {
-      background: var(--bg2);
-      border: 1px solid var(--bg3);
-      border-radius: var(--radius);
-      padding: 16px;
-    }
-    .tournament-card.invalid { opacity: .6; border-style: dashed; }
-
-    .card-header {
+    /* Barra di stato polling */
+    .poll-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+      padding: 10px 14px;
+      background: var(--bg2);
+      border-radius: var(--radius);
+      border: 1px solid var(--bg3);
     }
 
-    .card-date  { font-family: 'Cinzel', serif; font-size: 13px; }
-    .card-badge { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 1px; color: var(--gold); }
-    .badge-invalid { color: var(--muted); font-style: italic; }
-
-    .card-players { font-size: 15px; color: var(--muted); margin-bottom: 10px; font-style: italic; }
-
-    .card-matches { display: flex; flex-direction: column; gap: 4px; }
-
-    .hist-match {
-      font-size: 15px;
-      padding: 4px 0;
-      border-top: 1px solid var(--bg3);
+    .poll-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      margin-right: 7px;
+      animation: pulse 2s ease-in-out infinite;
     }
-    .hist-match:first-child { border-top: none; }
-    .hist-match strong { color: var(--gold); }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .3; }
+    }
 
-    /* Partite */
+    /* Battle rows */
     .battles-list { display: flex; flex-direction: column; gap: 8px; }
 
     .battle-row {
@@ -105,7 +80,7 @@
     .our-side  { color: var(--text); font-weight: 600; }
     .battle-vs { color: var(--muted); font-size: 13px; }
     .opp-side  { color: var(--muted); }
-    .opp-registered { color: var(--gold); }
+    .reg-name  { color: var(--gold); }
 
     .battle-meta {
       display: flex;
@@ -120,27 +95,28 @@
 
   <header>
     <a href="index.html" class="nav-link">← ARENA</a>
-    <div class="logo">Classifiche</div>
-    <a href="partite.html" class="nav-link">PARTITE</a>
+    <div class="logo">Partite</div>
+    <a href="classifiche.html" class="nav-link">CLASSIF.</a>
   </header>
 
   <main>
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="classifica" onclick="switchTab('classifica')">CLASSIFICA</button>
-      <button class="tab-btn" data-tab="storico" onclick="switchTab('storico')">STORICO</button>
-      <button class="tab-btn" data-tab="partite" onclick="switchTab('partite')">PARTITE</button>
+    <div class="poll-bar">
+      <span><span class="poll-dot"></span><span id="poll-status">Avvio...</span></span>
+      <span id="next-poll"></span>
     </div>
 
-    <div id="tab-content">
+    <div id="battles-content">
       <p class="loading">Caricamento...</p>
     </div>
   </main>
+
+  <div id="toast"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
   <script src="js/supabase.js"></script>
   <script src="js/api.js"></script>
-  <script src="js/classifiche.js"></script>
+  <script src="js/partite.js"></script>
 
 </body>
 </html>
