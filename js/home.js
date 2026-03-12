@@ -367,18 +367,22 @@ async function poll() {
 // ============================================================
 
 function isBattleValid(battle, tournament, participantTagMap) {
-  // Accetta qualsiasi tipo di amichevole (1v1, 2v2, ecc.)
-  // Filtra solo per: data non precedente di oltre 2 min all'inizio del torneo
-  //                  e tutti i giocatori sono partecipanti
   const battleDate = parseCRDate(battle.battleTime);
   const cutoff = new Date(new Date(tournament.started_at) - 2 * 60_000);
-  if (battleDate < cutoff) return false;
+  if (battleDate < cutoff) {
+    console.log('[torneo] scartata per data:', battle.battleTime, '< cutoff', cutoff.toISOString());
+    return false;
+  }
 
   const allTags = [
     ...battle.team.map(p => p.tag.replace('#', '').toUpperCase()),
     ...battle.opponent.map(p => p.tag.replace('#', '').toUpperCase()),
   ];
-  return allTags.every(tag => participantTagMap[tag]);
+  const valid = allTags.every(tag => participantTagMap[tag]);
+  if (!valid) {
+    console.log('[torneo] scartata per tag non partecipante:', allTags, 'partecipanti:', Object.keys(participantTagMap));
+  }
+  return valid;
 }
 
 // ============================================================
