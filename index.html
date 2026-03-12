@@ -19,7 +19,7 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      padding-bottom: max(20px, env(safe-area-inset-bottom));
+      padding-bottom: calc(64px + max(20px, env(safe-area-inset-bottom)));
     }
     .idle-view {
       flex: 1;
@@ -32,7 +32,7 @@
     .player-list-card {
       flex: 1;
       min-height: 0;
-      max-height: calc(100dvh - 220px);
+      max-height: calc(100dvh - 290px);
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       background: rgba(10, 15, 46, 0.6);
@@ -323,7 +323,7 @@
 <body>
 
   <header>
-    <div class="logo"><img src="images/ui/logo.png" alt="Royal Arena" class="logo-img"></div>
+    <div class="logo">Torneo</div>
   </header>
 
   <main>
