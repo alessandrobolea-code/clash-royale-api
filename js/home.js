@@ -4,7 +4,6 @@
 
 let allPlayers = [];             // tutti i giocatori registrati
 let selectedPlayerIds = new Set(); // chip selezionati
-let matchType = '1v1';           // '1v1' | 'tripla'
 
 let activeTournament = null;     // oggetto torneo corrente
 let tournamentMatches = [];      // partite già rilevate
@@ -69,14 +68,6 @@ function renderIdle() {
         ${playerGrid || '<p class="empty-msg">Nessun giocatore registrato</p>'}
       </div>
 
-      <div class="section-label" style="margin-top:24px">MODALITÀ</div>
-      <div class="type-toggle">
-        <button class="toggle-btn ${matchType === '1v1' ? 'active' : ''}"
-                onclick="setMatchType('1v1')">1v1</button>
-        <button class="toggle-btn ${matchType === 'tripla' ? 'active' : ''}"
-                onclick="setMatchType('tripla')">Tripla</button>
-      </div>
-
       <div class="start-wrap">
         <button class="btn-start" onclick="startTournament()">AVVIA</button>
       </div>
@@ -102,7 +93,6 @@ function renderActive() {
 
       <div class="participants-bar">
         ${participants.map(p => `<span class="pchip">${p.username}</span>`).join('')}
-        &mdash; <span class="match-type-badge">${activeTournament.match_type.toUpperCase()}</span>
       </div>
 
       <div class="matches-list" id="matches-list">
@@ -212,12 +202,6 @@ function togglePlayer(id) {
   });
 }
 
-function setMatchType(type) {
-  matchType = type;
-  document.querySelectorAll('.toggle-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.textContent.toLowerCase() === type);
-  });
-}
 
 // ============================================================
 // AVVIA TORNEO
@@ -235,7 +219,7 @@ async function startTournament() {
   btn.textContent = '...';
 
   try {
-    activeTournament = await createTournament(ids, matchType);
+    activeTournament = await createTournament(ids, 'amichevole');
     // Ricarica con i dati dei giocatori inclusi
     activeTournament = await getActiveTournament();
     tournamentMatches = [];
@@ -383,17 +367,12 @@ async function poll() {
 // ============================================================
 
 function isBattleValid(battle, tournament, participantTagMap) {
-  // Tipo: 1v1 → un giocatore per lato; tripla → 2v2
-  const is1v1    = battle.team.length === 1 && battle.opponent.length === 1;
-  const isTripla = battle.team.length === 2 && battle.opponent.length === 2;
-  if (tournament.match_type === '1v1'    && !is1v1)    return false;
-  if (tournament.match_type === 'tripla' && !isTripla) return false;
-
-  // La partita deve essere avvenuta dopo l'inizio del torneo
+  // Accetta qualsiasi tipo di amichevole (1v1, 2v2, ecc.)
+  // Filtra solo per: data successiva all'inizio del torneo
+  //                  e tutti i giocatori sono partecipanti
   const battleDate = parseCRDate(battle.battleTime);
   if (battleDate <= new Date(tournament.started_at)) return false;
 
-  // Entrambi i giocatori devono essere partecipanti al torneo
   const allTags = [
     ...battle.team.map(p => p.tag.replace('#', '').toUpperCase()),
     ...battle.opponent.map(p => p.tag.replace('#', '').toUpperCase()),
