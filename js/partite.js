@@ -171,10 +171,18 @@ function renderBattles() {
   }</div>`;
 }
 
+function formatBattleDate(battleTime) {
+  if (!battleTime) return '—';
+  // Formato CR: "20260312T122536.000Z"
+  const m = battleTime.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})/);
+  if (!m) return '—';
+  const months = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+  return `${m[3]} ${months[parseInt(m[2]) - 1]} ${m[4]}:${m[5]}`;
+}
+
 function renderBattleRow(battle, ourPlayerTag) {
   const date = parseCRDate(battle.battleTime);
-  const timeLabel = date.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' })
-    + ' ' + date.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  const timeLabel = formatBattleDate(battle.battleTime);
 
   const teamTags = battle.team.map(p => p.tag.replace('#', '').toUpperCase());
   const isTeam   = teamTags.includes(ourPlayerTag);
