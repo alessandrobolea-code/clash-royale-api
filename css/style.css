@@ -47,6 +47,15 @@ header {
   font-size: 20px;
   color: var(--gold);
   letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-img {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
 }
 
 .nav-link {

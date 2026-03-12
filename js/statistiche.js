@@ -74,12 +74,23 @@ function renderStats(d, tournamentPoints) {
     : '';
 
   const arenaHtml = d.arena
-    ? `<div class="stat-row"><span class="stat-lbl">Arena</span><span class="stat-val">${d.arena.name}</span></div>`
+    ? `<div class="stat-row">
+         <span class="stat-lbl">Arena</span>
+         <span class="stat-val arena-val">
+           <img src="${arenaImg(d.arena.name)}" alt="" class="arena-img" onerror="this.style.display='none'">
+           ${d.arena.name}
+         </span>
+       </div>`
     : '';
+
+  const levelImg = `images/levels/${Math.min(d.expLevel, 13)}.png`;
 
   return `
     <div class="level-trophy-row">
-      <div class="level-badge">Lv ${d.expLevel}</div>
+      <div class="level-badge">
+        <img src="${levelImg}" alt="Lv ${d.expLevel}" class="level-img" onerror="this.style.display='none'">
+        Lv ${d.expLevel}
+      </div>
       <div class="trophy-block">
         <span class="trophy-icon">🏆</span>
         <span class="trophy-val">${d.trophies.toLocaleString('it-IT')}</span>
@@ -114,6 +125,15 @@ function renderStats(d, tournamentPoints) {
       <span class="stat-val">${d.battleCount.toLocaleString('it-IT')}</span>
     </div>
   `;
+}
+
+// Mappa nome arena → file immagine (kebab-case)
+function arenaImg(arenaName) {
+  const slug = arenaName.toLowerCase()
+    .replace(/['']/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '');
+  return `images/arenas/${slug}.png`;
 }
 
 document.addEventListener('DOMContentLoaded', init);
