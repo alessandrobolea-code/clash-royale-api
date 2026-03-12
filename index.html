@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0a0f2e">
@@ -12,7 +12,31 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    main { min-height: calc(100vh - 64px); }
+    body { display: flex; flex-direction: column; overflow: hidden; }
+    main {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+    .idle-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      gap: 0;
+    }
+    .player-list-card {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      background: rgba(10, 15, 46, 0.6);
+      border: 1px solid var(--bg3);
+      border-radius: var(--radius);
+      padding: 10px;
+      margin-bottom: 24px;
+    }
     .logo span { font-size: 22px; }
 
     /* Player list */

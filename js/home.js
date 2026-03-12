@@ -78,8 +78,10 @@ function renderIdle() {
   app.innerHTML = `
     <div class="idle-view">
       <div class="section-label">GIOCATORI</div>
-      <div class="player-list">
-        ${playerList || '<p class="empty-msg">Nessun giocatore registrato</p>'}
+      <div class="player-list-card">
+        <div class="player-list">
+          ${playerList || '<p class="empty-msg">Nessun giocatore registrato</p>'}
+        </div>
       </div>
       <div class="start-wrap">
         <button class="btn-start" onclick="startTournament()">AVVIA</button>

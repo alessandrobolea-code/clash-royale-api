@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0a0f2e">
@@ -42,53 +42,8 @@
       50%       { opacity: .3; }
     }
 
-    /* Battle rows */
-    .battles-list { display: flex; flex-direction: column; gap: 8px; }
-
-    .battle-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--bg2);
-      border-radius: var(--radius);
-      padding: 12px 14px;
-      border-left: 4px solid transparent;
-    }
-    .battle-win  { border-left-color: var(--green); }
-    .battle-loss { border-left-color: var(--red); }
-
-    .battle-result-badge {
-      font-family: 'Cinzel', serif;
-      font-size: 13px;
-      font-weight: 700;
-      width: 22px;
-      flex-shrink: 0;
-      text-align: center;
-    }
-    .battle-win  .battle-result-badge { color: var(--green); }
-    .battle-loss .battle-result-badge { color: var(--red); }
-
-    .battle-info { flex: 1; min-width: 0; }
-
-    .battle-players {
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-    .our-side  { color: var(--text); font-weight: 600; }
-    .battle-vs { color: var(--muted); font-size: 13px; }
-    .opp-side  { color: var(--muted); }
-    .reg-name  { color: var(--gold); }
-
-    .battle-meta {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 4px;
-      font-size: 13px;
-      color: var(--muted);
-    }
+    /* Giocatori registrati evidenziati in gold */
+    .reg-name { color: var(--gold); }
   </style>
 </head>
 <body>
