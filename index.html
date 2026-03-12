@@ -10,97 +10,12 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon.png">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
   <style>
-    /* ========================================================
-       RESET & BASE
-       ======================================================== */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:       #0a0f2e;
-      --bg2:      #111a42;
-      --bg3:      #1a2558;
-      --gold:     #f5c842;
-      --gold-dim: #c9a12e;
-      --text:     #e8e0d0;
-      --muted:    #8890b0;
-      --green:    #2ecc71;
-      --red:      #e74c3c;
-      --radius:   12px;
-    }
-
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Crimson Text', Georgia, serif;
-      font-size: 18px;
-      -webkit-font-smoothing: antialiased;
-      overscroll-behavior: none;
-    }
-
-    /* ========================================================
-       HEADER
-       ======================================================== */
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      padding-top: max(16px, env(safe-area-inset-top));
-      background: var(--bg);
-      border-bottom: 1px solid var(--bg3);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .logo {
-      font-family: 'Cinzel Decorative', cursive;
-      font-size: 20px;
-      color: var(--gold);
-      letter-spacing: 1px;
-    }
-
+    main { min-height: calc(100vh - 64px); }
     .logo span { font-size: 22px; }
 
-    .nav-link {
-      font-family: 'Cinzel', serif;
-      font-size: 13px;
-      color: var(--muted);
-      text-decoration: none;
-      letter-spacing: 1px;
-      padding: 6px 12px;
-      border: 1px solid var(--bg3);
-      border-radius: 6px;
-      transition: color .2s, border-color .2s;
-    }
-    .nav-link:hover { color: var(--gold); border-color: var(--gold); }
-
-    /* ========================================================
-       MAIN CONTENT
-       ======================================================== */
-    main {
-      padding: 24px 20px;
-      max-width: 480px;
-      margin: 0 auto;
-      min-height: calc(100vh - 64px);
-    }
-
-    /* ========================================================
-       SECTION LABEL
-       ======================================================== */
-    .section-label {
-      font-family: 'Cinzel', serif;
-      font-size: 11px;
-      letter-spacing: 2px;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-
-    /* ========================================================
-       PLAYER GRID — chips selezionabili
-       ======================================================== */
+    /* Player grid */
     .player-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -128,13 +43,8 @@
       font-weight: bold;
     }
 
-    /* ========================================================
-       TYPE TOGGLE
-       ======================================================== */
-    .type-toggle {
-      display: flex;
-      gap: 10px;
-    }
+    /* Type toggle */
+    .type-toggle { display: flex; gap: 10px; }
 
     .toggle-btn {
       flex: 1;
@@ -156,9 +66,7 @@
       color: var(--gold);
     }
 
-    /* ========================================================
-       AVVIA BUTTON (cerchio oro)
-       ======================================================== */
+    /* Bottone AVVIA circolare */
     .start-wrap {
       display: flex;
       justify-content: center;
@@ -184,9 +92,7 @@
     .btn-start:active { transform: scale(.94); box-shadow: 0 0 12px rgba(245,200,66,.2); }
     .btn-start:disabled { opacity: .5; cursor: not-allowed; }
 
-    /* ========================================================
-       ACTIVE VIEW
-       ======================================================== */
+    /* Status bar */
     .status-bar {
       display: flex;
       align-items: center;
@@ -213,7 +119,6 @@
       background: var(--gold-dim);
       flex-shrink: 0;
     }
-
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50%       { opacity: .4; }
@@ -223,7 +128,6 @@
       font-family: 'Cinzel', serif;
       font-size: 14px;
       letter-spacing: 1px;
-      color: var(--text);
       flex: 1;
     }
 
@@ -261,9 +165,7 @@
       letter-spacing: 1px;
     }
 
-    /* ========================================================
-       MATCH ROWS
-       ======================================================== */
+    /* Match rows */
     .matches-list {
       display: flex;
       flex-direction: column;
@@ -300,53 +202,9 @@
     .winner { color: var(--gold); font-weight: 600; }
     .loser  { color: var(--muted); }
     .vs     { color: var(--muted); font-size: 13px; }
+    .crowns { font-size: 15px; white-space: nowrap; }
 
-    .crowns {
-      font-size: 15px;
-      color: var(--text);
-      white-space: nowrap;
-    }
-
-    /* ========================================================
-       FOOTER BUTTONS
-       ======================================================== */
-    .active-footer {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .btn-cancel {
-      width: 100%;
-      background: transparent;
-      border: 1px solid var(--red);
-      color: var(--red);
-      border-radius: var(--radius);
-      padding: 14px;
-      font-family: 'Cinzel', serif;
-      font-size: 14px;
-      letter-spacing: 1px;
-      cursor: pointer;
-      transition: background .15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .btn-cancel:active { background: rgba(231,76,60,.15); }
-
-    .btn-gold {
-      width: 100%;
-      background: transparent;
-      border: 1px solid var(--gold);
-      color: var(--gold);
-      border-radius: var(--radius);
-      padding: 14px;
-      font-family: 'Cinzel', serif;
-      font-size: 14px;
-      letter-spacing: 1px;
-      cursor: pointer;
-      transition: background .15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .btn-gold:active { background: rgba(245,200,66,.1); }
+    .active-footer { display: flex; flex-direction: column; gap: 10px; }
 
     .pause-msg {
       text-align: center;
@@ -356,9 +214,7 @@
       line-height: 1.5;
     }
 
-    /* ========================================================
-       PODIO (complete)
-       ======================================================== */
+    /* Podio */
     .complete-view { text-align: center; }
 
     .complete-title {
@@ -406,49 +262,6 @@
     }
 
     .complete-footer { margin-top: 8px; }
-
-    .btn-link {
-      display: inline-block;
-      font-family: 'Cinzel', serif;
-      font-size: 15px;
-      color: var(--gold);
-      text-decoration: none;
-      border: 1px solid var(--gold);
-      border-radius: var(--radius);
-      padding: 14px 28px;
-      letter-spacing: 1px;
-      transition: background .15s;
-    }
-    .btn-link:active { background: rgba(245,200,66,.1); }
-
-    /* ========================================================
-       UTILS
-       ======================================================== */
-    .empty-msg, .loading {
-      color: var(--muted);
-      font-style: italic;
-      text-align: center;
-      padding: 20px 0;
-    }
-
-    /* Toast */
-    #toast {
-      position: fixed;
-      bottom: max(30px, env(safe-area-inset-bottom));
-      left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: var(--bg3);
-      color: var(--text);
-      padding: 12px 22px;
-      border-radius: 24px;
-      font-size: 15px;
-      white-space: nowrap;
-      transition: transform .25s, opacity .25s;
-      opacity: 0;
-      z-index: 100;
-      border: 1px solid var(--gold-dim);
-    }
-    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
   </style>
 </head>
 <body>
@@ -467,15 +280,11 @@
     </div>
   </main>
 
-  <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- App scripts -->
   <script src="js/config.js"></script>
   <script src="js/supabase.js"></script>
   <script src="js/api.js"></script>
   <script src="js/home.js"></script>
-
-  <!-- Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js').catch(() => {});

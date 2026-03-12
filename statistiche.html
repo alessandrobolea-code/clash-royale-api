@@ -10,81 +10,11 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon.png">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* Cards giocatori */
+    #stats-grid { display: flex; flex-direction: column; gap: 16px; }
 
-    :root {
-      --bg:       #0a0f2e;
-      --bg2:      #111a42;
-      --bg3:      #1a2558;
-      --gold:     #f5c842;
-      --gold-dim: #c9a12e;
-      --text:     #e8e0d0;
-      --muted:    #8890b0;
-      --green:    #2ecc71;
-      --red:      #e74c3c;
-      --radius:   12px;
-    }
-
-    html, body {
-      min-height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Crimson Text', Georgia, serif;
-      font-size: 18px;
-      -webkit-font-smoothing: antialiased;
-      overscroll-behavior: none;
-    }
-
-    /* HEADER */
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      padding-top: max(16px, env(safe-area-inset-top));
-      background: var(--bg);
-      border-bottom: 1px solid var(--bg3);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .logo {
-      font-family: 'Cinzel Decorative', cursive;
-      font-size: 20px;
-      color: var(--gold);
-      letter-spacing: 1px;
-    }
-
-    .nav-link {
-      font-family: 'Cinzel', serif;
-      font-size: 13px;
-      color: var(--muted);
-      text-decoration: none;
-      letter-spacing: 1px;
-      padding: 6px 12px;
-      border: 1px solid var(--bg3);
-      border-radius: 6px;
-      transition: color .2s, border-color .2s;
-    }
-    .nav-link:hover { color: var(--gold); border-color: var(--gold); }
-
-    /* MAIN */
-    main {
-      padding: 24px 20px;
-      max-width: 480px;
-      margin: 0 auto;
-    }
-
-    /* GRID CARDS */
-    #stats-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    /* CARD */
     .stat-card {
       background: var(--bg2);
       border: 1px solid var(--bg3);
@@ -100,25 +30,10 @@
       border-bottom: 1px solid var(--bg3);
     }
 
-    .card-name {
-      font-family: 'Cinzel', serif;
-      font-size: 17px;
-      color: var(--gold);
-      letter-spacing: .5px;
-    }
+    .card-name { font-family: 'Cinzel', serif; font-size: 17px; color: var(--gold); }
+    .card-tag  { font-family: 'Cinzel', serif; font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+    .card-body { padding: 14px 16px; }
 
-    .card-tag {
-      font-family: 'Cinzel', serif;
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 1px;
-    }
-
-    .card-body {
-      padding: 14px 16px;
-    }
-
-    /* Loading inline */
     .loading-inline {
       display: flex;
       align-items: center;
@@ -129,24 +44,8 @@
       min-height: 48px;
     }
 
-    .spinner {
-      display: inline-block;
-      width: 16px; height: 16px;
-      border: 2px solid var(--bg3);
-      border-top-color: var(--gold);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-      flex-shrink: 0;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* LEVEL + TROFEI */
-    .level-trophy-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
+    /* Level + trofei */
+    .level-trophy-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
 
     .level-badge {
       background: var(--bg3);
@@ -160,26 +59,12 @@
       white-space: nowrap;
     }
 
-    .trophy-block {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-    }
+    .trophy-block { display: flex; align-items: baseline; gap: 6px; }
+    .trophy-icon  { font-size: 18px; }
+    .trophy-val   { font-family: 'Cinzel', serif; font-size: 22px; color: var(--gold); }
+    .trophy-best  { font-size: 13px; color: var(--muted); }
 
-    .trophy-icon { font-size: 18px; }
-
-    .trophy-val {
-      font-family: 'Cinzel', serif;
-      font-size: 22px;
-      color: var(--gold);
-    }
-
-    .trophy-best {
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    /* STAT BOXES (griglia 2x2) */
+    /* Griglia 2x2 stat box */
     .stats-grid-inner {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -193,27 +78,13 @@
       padding: 10px 12px;
       text-align: center;
     }
+    .stat-box.highlight { border: 1px solid var(--gold-dim); }
 
-    .stat-box.highlight {
-      border: 1px solid var(--gold-dim);
-    }
-
-    .stat-box-val {
-      font-family: 'Cinzel', serif;
-      font-size: 20px;
-      color: var(--text);
-      line-height: 1.2;
-    }
-
+    .stat-box-val { font-family: 'Cinzel', serif; font-size: 20px; line-height: 1.2; }
     .stat-box.highlight .stat-box-val { color: var(--gold); }
+    .stat-box-lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-    .stat-box-lbl {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    /* STAT ROWS (clan, arena, ecc.) */
+    /* Righe clan/arena */
     .stat-row {
       display: flex;
       justify-content: space-between;
@@ -222,26 +93,11 @@
       border-top: 1px solid var(--bg3);
       font-size: 15px;
     }
-
     .stat-row.muted { opacity: .7; }
-
-    .stat-lbl { color: var(--muted); }
-    .stat-val { color: var(--text); }
+    .stat-lbl  { color: var(--muted); }
     .clan-name { color: var(--gold); font-style: italic; }
 
-    /* UTILS */
-    .loading, .empty-msg {
-      color: var(--muted);
-      font-style: italic;
-      text-align: center;
-      padding: 30px 0;
-    }
-
-    .error-msg, .error-inline {
-      color: var(--red);
-      font-size: 14px;
-      padding: 8px 0;
-    }
+    .error-inline { color: var(--red); font-size: 14px; padding: 8px 0; }
   </style>
 </head>
 <body>
