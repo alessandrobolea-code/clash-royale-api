@@ -83,13 +83,11 @@ function renderStats(d, tournamentPoints) {
        </div>`
     : '';
 
-  const levelImg = `images/levels/${Math.min(d.expLevel, 13)}.png`;
-
   return `
     <div class="level-trophy-row">
       <div class="level-badge">
-        <img src="${levelImg}" alt="Lv ${d.expLevel}" class="level-img" onerror="this.style.display='none'">
-        Lv ${d.expLevel}
+        <img src="images/levels/level-big.png" alt="" class="level-img" onerror="this.style.display='none'">
+        <span class="level-num">${d.expLevel}</span>
       </div>
       <div class="trophy-block">
         <span class="trophy-icon">🏆</span>
