@@ -1,4 +1,14 @@
 /* ============================================================
+   FONT CUSTOM
+   ============================================================ */
+@font-face {
+  font-family: 'ClashRoyale';
+  src: url('../images/Clash-Royale-Font/You Blockhead.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* ============================================================
    RESET & VARIABILI
    ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -44,7 +54,7 @@ header {
 }
 
 .logo {
-  font-family: 'Cinzel Decorative', cursive;
+  font-family: 'ClashRoyale', 'Cinzel Decorative', cursive;
   font-size: 20px;
   color: var(--gold);
   letter-spacing: 1px;
