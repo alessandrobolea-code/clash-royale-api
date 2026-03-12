@@ -26,9 +26,17 @@
   --radius:   12px;
 }
 
+html::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url('../images/background.jpg') center center / cover no-repeat;
+  z-index: -1;
+}
+
 html, body {
   height: 100dvh;
-  background: var(--bg) url('../images/background.jpg') center center / cover fixed;
+  background: var(--bg);
   color: var(--text);
   font-family: 'ClashRoyale', 'Cinzel Decorative', cursive;
   font-size: 18px;
