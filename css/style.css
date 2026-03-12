@@ -27,7 +27,7 @@
 }
 
 html, body {
-  height: 100%;
+  height: 100dvh;
   background: var(--bg) url('../images/background.jpg') center center / cover fixed;
   color: var(--text);
   font-family: 'Crimson Text', Georgia, serif;
