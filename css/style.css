@@ -41,7 +41,7 @@ html {
 
 body {
   height: 100dvh;
-  background: #060a1e;
+  background: transparent;
   color: var(--text);
   font-family: 'ClashRoyale', 'Cinzel Decorative', cursive;
   font-size: 18px;
