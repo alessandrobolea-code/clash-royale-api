@@ -30,7 +30,7 @@ html, body {
   height: 100dvh;
   background: var(--bg) url('../images/background.jpg') center center / cover fixed;
   color: var(--text);
-  font-family: 'Crimson Text', Georgia, serif;
+  font-family: 'ClashRoyale', 'Cinzel Decorative', cursive;
   font-size: 18px;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
@@ -70,7 +70,7 @@ header {
 }
 
 .nav-link {
-  font-family: 'Cinzel', serif;
+  font-family: 'ClashRoyale', 'Cinzel', serif;
   font-size: 13px;
   color: var(--muted);
   text-decoration: none;
@@ -95,7 +95,7 @@ main {
    LABEL DI SEZIONE
    ============================================================ */
 .section-label {
-  font-family: 'Cinzel', serif;
+  font-family: 'ClashRoyale', 'Cinzel', serif;
   font-size: 11px;
   letter-spacing: 2px;
   color: var(--muted);
@@ -112,7 +112,7 @@ main {
   color: var(--gold);
   border-radius: var(--radius);
   padding: 14px;
-  font-family: 'Cinzel', serif;
+  font-family: 'ClashRoyale', 'Cinzel', serif;
   font-size: 14px;
   letter-spacing: 1px;
   cursor: pointer;
@@ -128,7 +128,7 @@ main {
   color: var(--red);
   border-radius: var(--radius);
   padding: 14px;
-  font-family: 'Cinzel', serif;
+  font-family: 'ClashRoyale', 'Cinzel', serif;
   font-size: 14px;
   letter-spacing: 1px;
   cursor: pointer;
@@ -139,7 +139,7 @@ main {
 
 .btn-link {
   display: inline-block;
-  font-family: 'Cinzel', serif;
+  font-family: 'ClashRoyale', 'Cinzel', serif;
   font-size: 15px;
   color: var(--gold);
   text-decoration: none;
@@ -167,7 +167,7 @@ main {
   background: var(--bg2);
   border: none;
   color: var(--muted);
-  font-family: 'Cinzel', serif;
+  font-family: 'ClashRoyale', 'Cinzel', serif;
   font-size: 13px;
   letter-spacing: 1px;
   padding: 14px;
@@ -227,7 +227,7 @@ main {
 .battle-loss { border-left-color: var(--red); }
 
 .battle-result-badge {
-  font-family: 'Cinzel', serif;
+  font-family: 'ClashRoyale', 'Cinzel', serif;
   font-size: 13px;
   font-weight: 700;
   width: 22px;
