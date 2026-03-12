@@ -1,152 +1,235 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#0a0f2e">
-  <title>Statistiche — Royal Arena</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="images/ui/icon.png">
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
-  <style>
-    /* Cards giocatori */
-    #stats-grid { display: flex; flex-direction: column; gap: 16px; }
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+        />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta
+            name="apple-mobile-web-app-status-bar-style"
+            content="black-translucent"
+        />
+        <meta name="theme-color" content="#0a0f2e" />
+        <title>Statistiche — Royal Arena</title>
+        <link rel="manifest" href="manifest.json" />
+        <link rel="apple-touch-icon" href="images/ui/icon.png" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="css/style.css" />
+        <style>
+            /* Cards giocatori */
+            #stats-grid {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
 
-    .stat-card {
-      background: var(--bg2);
-      border: 1px solid var(--bg3);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
+            .stat-card {
+                background: var(--bg2);
+                border: 1px solid var(--bg3);
+                border-radius: var(--radius);
+                overflow: hidden;
+            }
 
-    .card-top {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      padding: 14px 16px 10px;
-      border-bottom: 1px solid var(--bg3);
-    }
+            .card-top {
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+                padding: 14px 16px 10px;
+                border-bottom: 1px solid var(--bg3);
+            }
 
-    .card-name { font-family: 'ClashRoyale', 'Cinzel', serif; font-size: 17px; color: var(--gold); }
-    .card-tag  { font-family: 'ClashRoyale', 'Cinzel', serif; font-size: 11px; color: var(--muted); letter-spacing: 1px; }
-    .card-body { padding: 14px 16px; }
+            .card-name {
+                font-family: "ClashRoyale", "Cinzel", serif;
+                font-size: 17px;
+                color: var(--gold);
+            }
+            .card-tag {
+                font-family: "ClashRoyale", "Cinzel", serif;
+                font-size: 11px;
+                color: var(--muted);
+                letter-spacing: 1px;
+            }
+            .card-body {
+                padding: 14px 16px;
+            }
 
-    .loading-inline {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--muted);
-      font-style: italic;
-      font-size: 15px;
-      min-height: 48px;
-    }
+            .loading-inline {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                color: var(--muted);
+                font-style: italic;
+                font-size: 15px;
+                min-height: 48px;
+            }
 
-    /* Level + trofei */
-    .level-trophy-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+            /* Level + trofei */
+            .level-trophy-row {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 14px;
+            }
 
-    .level-badge {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 44px;
-      height: 44px;
-      flex-shrink: 0;
-    }
-    .level-img { width: 44px; height: 44px; object-fit: contain; display: block; }
-    .level-num {
-      position: absolute;
-      font-family: 'ClashRoyale', 'Cinzel Decorative', cursive;
-      font-size: 15px;
-      color: #fff;
-      text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 6px rgba(0,0,0,.7);
-      line-height: 1;
-      pointer-events: none;
-    }
+            .level-badge {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 44px;
+                height: 44px;
+                flex-shrink: 0;
+            }
+            .level-img {
+                width: 44px;
+                height: 44px;
+                object-fit: contain;
+                display: block;
+            }
+            .level-num {
+                position: absolute;
+                font-family: "ClashRoyale", "Cinzel Decorative", cursive;
+                font-size: 15px;
+                color: #fff;
+                text-shadow:
+                    0 1px 3px rgba(0, 0, 0, 0.9),
+                    0 0 6px rgba(0, 0, 0, 0.7);
+                line-height: 1;
+                pointer-events: none;
+            }
 
-    .trophy-block { display: flex; align-items: baseline; gap: 6px; }
-    .trophy-icon  { font-size: 18px; }
-    .trophy-val   { font-family: 'ClashRoyale', 'Cinzel', serif; font-size: 22px; color: var(--gold); }
-    .trophy-best  { font-size: 13px; color: var(--muted); }
+            .trophy-block {
+                display: flex;
+                align-items: baseline;
+                gap: 6px;
+            }
+            .trophy-icon {
+                font-size: 18px;
+            }
+            .trophy-val {
+                font-family: "ClashRoyale", "Cinzel", serif;
+                font-size: 22px;
+                color: var(--gold);
+            }
+            .trophy-best {
+                font-size: 13px;
+                color: var(--muted);
+            }
 
-    /* Griglia 2x2 stat box */
-    .stats-grid-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
+            /* Griglia 2x2 stat box */
+            .stats-grid-inner {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                margin-bottom: 12px;
+            }
 
-    .stat-box {
-      background: var(--bg3);
-      border-radius: 8px;
-      padding: 10px 12px;
-      text-align: center;
-    }
-    .stat-box.highlight { border: 1px solid var(--gold-dim); }
+            .stat-box {
+                background: var(--bg3);
+                border-radius: 8px;
+                padding: 10px 12px;
+                text-align: center;
+            }
+            .stat-box.highlight {
+                border: 1px solid var(--gold-dim);
+            }
 
-    .stat-box-val { font-family: 'ClashRoyale', 'Cinzel', serif; font-size: 20px; line-height: 1.2; }
-    .stat-box.highlight .stat-box-val { color: var(--gold); }
-    .stat-box-lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+            .stat-box-val {
+                font-family: "ClashRoyale", "Cinzel", serif;
+                font-size: 20px;
+                line-height: 1.2;
+            }
+            .stat-box.highlight .stat-box-val {
+                color: var(--gold);
+            }
+            .stat-box-lbl {
+                font-size: 12px;
+                color: var(--muted);
+                margin-top: 2px;
+            }
 
-    /* Righe clan/arena */
-    .stat-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 0;
-      border-top: 1px solid var(--bg3);
-      font-size: 15px;
-    }
-    .stat-row.muted { opacity: .7; }
-    .stat-lbl  { color: var(--muted); }
-    .clan-name { color: var(--gold); font-style: italic; }
+            /* Righe clan/arena */
+            .stat-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 6px 0;
+                border-top: 1px solid var(--bg3);
+                font-size: 15px;
+            }
+            .stat-row.muted {
+                opacity: 0.7;
+            }
+            .stat-lbl {
+                color: var(--muted);
+            }
+            .clan-name {
+                color: var(--gold);
+                font-style: italic;
+            }
 
-    .error-inline { color: var(--red); font-size: 14px; padding: 8px 0; }
+            .error-inline {
+                color: var(--red);
+                font-size: 14px;
+                padding: 8px 0;
+            }
 
-    .level-img { height: 18px; width: auto; vertical-align: middle; margin-right: 2px; }
+            .level-img {
+                height: 18px;
+                width: auto;
+                vertical-align: middle;
+                margin-right: 2px;
+            }
 
-    .arena-val { display: flex; align-items: center; gap: 6px; }
-    .arena-img { height: 28px; width: auto; border-radius: 4px; }
-  </style>
-</head>
-<body>
+            .arena-val {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .arena-img {
+                height: 28px;
+                width: auto;
+                border-radius: 4px;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div class="logo">Statistiche</div>
+        </header>
 
-  <header>
-    <div class="logo">Statistiche</div>
-  </header>
+        <main>
+            <div id="stats-grid">
+                <p class="loading">Caricamento...</p>
+            </div>
+        </main>
 
-  <main>
-    <div id="stats-grid">
-      <p class="loading">Caricamento...</p>
-    </div>
-  </main>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="js/config.js"></script>
+        <script src="js/supabase.js"></script>
+        <script src="js/api.js"></script>
+        <script src="js/statistiche.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/config.js"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/statistiche.js"></script>
-
-  <nav class="bottom-nav">
-    <a href="statistiche.html" class="bn-item">
-      <img src="images/ui/social.png" class="bn-icon">
-      <span>CLASSIF.</span>
-    </a>
-    <a href="index.html" class="bn-item bn-center">
-      <div class="bn-center-ring">
-        <img src="images/ui/battle.png" class="bn-icon-center">
-      </div>
-      <span>ARENA</span>
-    </a>
-    <a href="classifiche.html" class="bn-item active">
-      <img src="images/ui/leaderboard.png" class="bn-icon">
-      <span>STATS</span>
-    </a>
-  </nav>
-
-</body>
+        <nav class="bottom-nav">
+            <a href="statistiche.html" class="bn-item">
+                <img src="images/ui/social.png" class="bn-icon" />
+                <span>CLASSIF.</span>
+            </a>
+            <a href="index.html" class="bn-item bn-center">
+                <div class="bn-center-ring">
+                    <img src="images/ui/battle.png" class="bn-icon-center" />
+                </div>
+                <span>ARENA</span>
+            </a>
+            <a href="classifiche.html" class="bn-item active">
+                <img src="images/ui/leaderboard.png" class="bn-icon" />
+                <span>STATS</span>
+            </a>
+        </nav>
+    </body>
 </html>

@@ -33,7 +33,7 @@ html {
 
 body {
   height: 100dvh;
-  background: transparent;
+  background: var(--bg);
   color: var(--text);
   font-family: 'ClashRoyale', 'Cinzel Decorative', cursive;
   font-size: 18px;
