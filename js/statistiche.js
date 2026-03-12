@@ -86,7 +86,7 @@ function renderStats(d, tournamentPoints) {
   return `
     <div class="level-trophy-row">
       <div class="level-badge">
-        <img src="images/levels/level-big.png" alt="" class="level-img" onerror="this.style.display='none'">
+        <img src="images/ui/level-big.png" alt="" class="level-img" onerror="this.style.display='none'">
         <span class="level-num">${d.expLevel}</span>
       </div>
       <div class="trophy-block">

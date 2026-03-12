@@ -1,113 +1,186 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#0a0f2e">
-  <title>Classifiche — Royal Arena</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="images/ui/icon.png">
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
-  <style>
-    /* Leaderboard */
-    .leaderboard { display: flex; flex-direction: column; gap: 8px; }
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+        />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta
+            name="apple-mobile-web-app-status-bar-style"
+            content="black-translucent"
+        />
+        <meta name="theme-color" content="#0a0f2e" />
+        <title>Classifiche — Royal Arena</title>
+        <link rel="manifest" href="manifest.json" />
+        <link rel="apple-touch-icon" href="images/ui/icon.png" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="css/style.css" />
+        <style>
+            /* Leaderboard */
+            .leaderboard {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
 
-    .leaderboard-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: var(--bg2);
-      border-radius: var(--radius);
-      padding: 14px 18px;
-      border: 1px solid var(--bg3);
-    }
+            .leaderboard-row {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                background: var(--bg2);
+                border-radius: var(--radius);
+                padding: 14px 18px;
+                border: 1px solid var(--bg3);
+            }
 
-    .leaderboard-row.rank-1 { border-color: var(--gold); box-shadow: 0 0 14px rgba(245,200,66,.15); }
-    .leaderboard-row.rank-2 { border-color: #aaa; }
-    .leaderboard-row.rank-3 { border-color: #c87d3e; }
+            .leaderboard-row.rank-1 {
+                border-color: var(--gold);
+                box-shadow: 0 0 14px rgba(245, 200, 66, 0.15);
+            }
+            .leaderboard-row.rank-2 {
+                border-color: #aaa;
+            }
+            .leaderboard-row.rank-3 {
+                border-color: #c87d3e;
+            }
 
-    .lb-rank { font-size: 22px; width: 32px; flex-shrink: 0; text-align: center; }
-    .lb-name { flex: 1; font-family: 'ClashRoyale', 'Cinzel', serif; font-size: 17px; }
-    .lb-pts  { font-family: 'ClashRoyale', 'Cinzel', serif; font-size: 16px; color: var(--gold); }
+            .lb-rank {
+                font-size: 22px;
+                width: 32px;
+                flex-shrink: 0;
+                text-align: center;
+            }
+            .lb-name {
+                flex: 1;
+                font-family: "ClashRoyale", "Cinzel", serif;
+                font-size: 17px;
+            }
+            .lb-pts {
+                font-family: "ClashRoyale", "Cinzel", serif;
+                font-size: 16px;
+                color: var(--gold);
+            }
 
-    /* Storico */
-    .storico-list { display: flex; flex-direction: column; gap: 16px; }
+            /* Storico */
+            .storico-list {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
 
-    .tournament-card {
-      background: var(--bg2);
-      border: 1px solid var(--bg3);
-      border-radius: var(--radius);
-      padding: 16px;
-    }
-    .tournament-card.invalid { opacity: .6; border-style: dashed; }
+            .tournament-card {
+                background: var(--bg2);
+                border: 1px solid var(--bg3);
+                border-radius: var(--radius);
+                padding: 16px;
+            }
+            .tournament-card.invalid {
+                opacity: 0.6;
+                border-style: dashed;
+            }
 
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 8px;
+            }
 
-    .card-date  { font-family: 'ClashRoyale', 'Cinzel', serif; font-size: 13px; }
-    .card-badge { font-family: 'ClashRoyale', 'Cinzel', serif; font-size: 11px; letter-spacing: 1px; color: var(--gold); }
-    .badge-invalid { color: var(--muted); font-style: italic; }
+            .card-date {
+                font-family: "ClashRoyale", "Cinzel", serif;
+                font-size: 13px;
+            }
+            .card-badge {
+                font-family: "ClashRoyale", "Cinzel", serif;
+                font-size: 11px;
+                letter-spacing: 1px;
+                color: var(--gold);
+            }
+            .badge-invalid {
+                color: var(--muted);
+                font-style: italic;
+            }
 
-    .card-players { font-size: 15px; color: var(--muted); margin-bottom: 10px; font-style: italic; }
+            .card-players {
+                font-size: 15px;
+                color: var(--muted);
+                margin-bottom: 10px;
+                font-style: italic;
+            }
 
-    .card-matches { display: flex; flex-direction: column; gap: 4px; }
+            .card-matches {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
 
-    .hist-match {
-      font-size: 15px;
-      padding: 4px 0;
-      border-top: 1px solid var(--bg3);
-    }
-    .hist-match:first-child { border-top: none; }
-    .hist-match strong { color: var(--gold); }
+            .hist-match {
+                font-size: 15px;
+                padding: 4px 0;
+                border-top: 1px solid var(--bg3);
+            }
+            .hist-match:first-child {
+                border-top: none;
+            }
+            .hist-match strong {
+                color: var(--gold);
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div class="logo">Classifiche</div>
+        </header>
 
-  </style>
-</head>
-<body>
+        <main>
+            <div class="tabs">
+                <button
+                    class="tab-btn active"
+                    data-tab="classifica"
+                    onclick="switchTab('classifica')"
+                >
+                    CLASSIFICA
+                </button>
+                <button
+                    class="tab-btn"
+                    data-tab="storico"
+                    onclick="switchTab('storico')"
+                >
+                    STORICO
+                </button>
+            </div>
 
-  <header>
-    <div class="logo">Classifiche</div>
-  </header>
+            <div id="tab-content">
+                <p class="loading">Caricamento...</p>
+            </div>
+        </main>
 
-  <main>
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="classifica" onclick="switchTab('classifica')">CLASSIFICA</button>
-      <button class="tab-btn" data-tab="storico" onclick="switchTab('storico')">STORICO</button>
-    </div>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="js/config.js"></script>
+        <script src="js/supabase.js"></script>
+        <script src="js/api.js"></script>
+        <script src="js/classifiche.js"></script>
 
-    <div id="tab-content">
-      <p class="loading">Caricamento...</p>
-    </div>
-  </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/config.js"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/classifiche.js"></script>
-
-  <nav class="bottom-nav">
-    <a href="statistiche.html" class="bn-item active">
-      <img src="images/ui/social.png" class="bn-icon">
-      <span>CLASSIF.</span>
-    </a>
-    <a href="index.html" class="bn-item bn-center">
-      <div class="bn-center-ring">
-        <img src="images/ui/battle.png" class="bn-icon-center">
-      </div>
-      <span>ARENA</span>
-    </a>
-    <a href="classifiche.html" class="bn-item">
-      <img src="images/ui/leaderboard.png" class="bn-icon">
-      <span>STATS</span>
-    </a>
-  </nav>
-
-</body>
+        <nav class="bottom-nav">
+            <a href="classifiche.html" class="bn-item active">
+                <img src="images/ui/social.png" class="bn-icon" />
+                <span>CLASSIF.</span>
+            </a>
+            <a href="index.html" class="bn-item bn-center">
+                <div class="bn-center-ring">
+                    <img src="images/ui/battle.png" class="bn-icon-center" />
+                </div>
+                <span>ARENA</span>
+            </a>
+            <a href="statistiche.html" class="bn-item">
+                <img src="images/ui/leaderboard.png" class="bn-icon" />
+                <span>STATS</span>
+            </a>
+        </nav>
+    </body>
 </html>
