@@ -132,25 +132,14 @@ main {
   z-index: 50;
 }
 
-.pwa .bottom-nav {
-  padding-bottom: 8px;
-}
-
 /* Fix banda blu iOS PWA su pagine non-scrollabili:
-   Su pagine non-scrollabili iOS posiziona bottom:0 al bordo del viewport interno
-   (esclusa safe-area ~34px sopra il fondo schermo), lasciando una banda scura sotto.
-   Lo ::after estende il background della nav nella gap.
-   Su pagine scrollabili (statistiche) la nav è già al fondo schermo → translateY(100%)
-   spinge l'::after fuori dallo schermo → nessun effetto visivo. */
-.pwa .bottom-nav::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: env(safe-area-inset-bottom, 0px);
-  transform: translateY(100%);
-  background: #060a1e;
+   iOS posiziona bottom:0 al bordo del viewport INTERNO (escludendo la safe-area ~34px).
+   Abbassare la nav di env(safe-area-inset-bottom) la porta al fondo schermo reale.
+   Il padding-bottom compensato mantiene le icone 8px sopra il fondo schermo.
+   Su dispositivi senza home indicator env()=0 → nessun effetto. */
+.pwa .bottom-nav {
+  bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
 }
 
 .bn-item {
