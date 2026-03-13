@@ -213,7 +213,7 @@ main {
 
 .btn-cancel {
   width: 100%;
-  background: transparent;
+  background: rgba(231, 76, 60, .18);
   border: 1px solid var(--red);
   color: var(--red);
   border-radius: var(--radius);
