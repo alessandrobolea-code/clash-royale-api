@@ -132,6 +132,12 @@ main {
   z-index: 50;
 }
 
+@media all and (display-mode: standalone) {
+  .bottom-nav {
+    padding-bottom: 8px;
+  }
+}
+
 .bn-item {
   display: flex;
   align-items: center;
