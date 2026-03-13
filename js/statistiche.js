@@ -330,7 +330,7 @@ function renderTournamentStats(finished, standingsMap = {}) {
   `;
 
   chartFilter = 'sempre';
-  drawChart(finished);
+  document.fonts.ready.then(() => drawChart(finished));
 }
 
 function setChartFilter(filter) {
@@ -338,7 +338,7 @@ function setChartFilter(filter) {
   document.querySelectorAll('.ts-filter-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.filter === filter);
   });
-  drawChart(cachedTournaments.filter(t => t.status === 'finished'));
+  document.fonts.ready.then(() => drawChart(cachedTournaments.filter(t => t.status === 'finished')));
 }
 
 function drawChart(tournaments) {
