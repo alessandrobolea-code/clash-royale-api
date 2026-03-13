@@ -279,21 +279,52 @@ function renderTournamentStats(finished, standingsMap = {}) {
     `;
   }).join('');
 
-  content.innerHTML = `
-    <div class="ts-list">${cards}</div>
-    <div class="ts-chart-section">
-      <div class="ts-chart-header">
-        <span class="ts-chart-title">Andamento vittorie</span>
-        <div class="ts-filter-btns">
-          <button class="ts-filter-btn" data-filter="1m" onclick="setChartFilter('1m')">1M</button>
-          <button class="ts-filter-btn" data-filter="3m" onclick="setChartFilter('3m')">3M</button>
-          <button class="ts-filter-btn active" data-filter="sempre" onclick="setChartFilter('sempre')">Sempre</button>
+  const totalMatches = finished.reduce((sum, t) => sum + t.tournament_matches.length, 0);
+  const lastTournament = finished.reduce((latest, t) =>
+    new Date(t.started_at) > new Date(latest.started_at) ? t : latest
+  );
+  const lastDate = new Date(lastTournament.started_at).toLocaleDateString('it-IT', {
+    day: '2-digit', month: 'long', year: 'numeric'
+  });
+
+  const generale = `
+    <div class="ts-card ts-card-generale expanded">
+      <div class="ts-name" onclick="toggleCard(this)">
+        <span>GENERALE</span>
+        <span class="card-chevron">▾</span>
+      </div>
+      <div class="ts-body">
+        <div class="ts-summary">
+          <div class="ts-summary-item">
+            <span class="ts-summary-val">${finished.length}</span>
+            <span class="ts-summary-lbl">Tornei</span>
+          </div>
+          <div class="ts-summary-item">
+            <span class="ts-summary-val">${totalMatches}</span>
+            <span class="ts-summary-lbl">Partite</span>
+          </div>
+          <div class="ts-summary-item">
+            <span class="ts-summary-val ts-summary-date">${lastDate}</span>
+            <span class="ts-summary-lbl">Ultimo torneo</span>
+          </div>
+        </div>
+        <div class="ts-chart-header">
+          <span class="ts-chart-title">Andamento vittorie</span>
+          <div class="ts-filter-btns">
+            <button class="ts-filter-btn" data-filter="1m" onclick="setChartFilter('1m')">1M</button>
+            <button class="ts-filter-btn" data-filter="3m" onclick="setChartFilter('3m')">3M</button>
+            <button class="ts-filter-btn active" data-filter="sempre" onclick="setChartFilter('sempre')">Sempre</button>
+          </div>
+        </div>
+        <div class="ts-chart-wrap">
+          <canvas id="ts-chart"></canvas>
         </div>
       </div>
-      <div class="ts-chart-wrap">
-        <canvas id="ts-chart"></canvas>
-      </div>
     </div>
+  `;
+
+  content.innerHTML = `
+    <div class="ts-list">${generale}${cards}</div>
   `;
 
   chartFilter = 'sempre';
