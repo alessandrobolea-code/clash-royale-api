@@ -3,7 +3,7 @@
 // ============================================================
 
 let activeTab = 'classifica'; // 'classifica' | 'storico'
-let hideInvalid = false;
+let hideInvalid = true;
 let cachedTournaments = null;
 
 async function init() {

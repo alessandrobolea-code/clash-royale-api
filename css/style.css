@@ -914,9 +914,9 @@ body.page-home main {
   transition: background .15s, color .15s, border-color .15s;
 }
 .toggle-invalid.active {
-  background: rgba(231, 76, 60, .15);
-  border-color: var(--red);
-  color: var(--red);
+  background: var(--bg3);
+  border-color: var(--text);
+  color: var(--text);
 }
 
 /* ============================================================
