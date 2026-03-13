@@ -288,7 +288,7 @@ function renderTournamentStats(finished, standingsMap = {}) {
   });
 
   const generale = `
-    <div class="ts-card ts-card-generale expanded">
+    <div class="ts-card ts-card-generale">
       <div class="ts-name" onclick="toggleCard(this)">
         <span>GENERALE</span>
         <span class="card-chevron">▾</span>

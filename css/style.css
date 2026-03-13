@@ -932,6 +932,10 @@ body.page-home main {
 .ts-card {
   background: var(--bg2);
   border: 1px solid var(--bg3);
+}
+
+.ts-card.ts-card-generale {
+  border-color: var(--gold);
   border-radius: 12px;
   overflow: hidden;
 }
