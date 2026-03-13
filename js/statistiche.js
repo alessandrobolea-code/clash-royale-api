@@ -127,7 +127,7 @@ function renderStats(d) {
         <div class="stat-box-val">${d.threeCrownWins.toLocaleString('it-IT')}</div>
         <div class="stat-box-lbl">3 Corone</div>
       </div>
-      <div class="stat-box highlight">
+      <div class="stat-box">
         <div class="stat-box-val">${d.battleCount.toLocaleString('it-IT')}</div>
         <div class="stat-box-lbl">Partite</div>
       </div>
