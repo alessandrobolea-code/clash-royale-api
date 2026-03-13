@@ -330,7 +330,7 @@ function renderTournamentStats(finished, standingsMap = {}) {
   `;
 
   chartFilter = 'sempre';
-  document.fonts.ready.then(() => drawChart(finished));
+  document.fonts.load('10px "ClashRoyale"').then(() => drawChart(finished));
 }
 
 function setChartFilter(filter) {
@@ -338,7 +338,7 @@ function setChartFilter(filter) {
   document.querySelectorAll('.ts-filter-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.filter === filter);
   });
-  document.fonts.ready.then(() => drawChart(cachedTournaments.filter(t => t.status === 'finished')));
+  document.fonts.load('10px "ClashRoyale"').then(() => drawChart(cachedTournaments.filter(t => t.status === 'finished')));
 }
 
 function drawChart(tournaments) {
@@ -350,7 +350,7 @@ function drawChart(tournaments) {
   const canvas = document.getElementById('ts-chart');
   if (!canvas) return;
 
-  Chart.defaults.font.family = 'Cinzel, serif';
+  Chart.defaults.font.family = 'ClashRoyale, serif';
   Chart.defaults.font.size = 10;
 
   const now = new Date();
@@ -412,17 +412,17 @@ function drawChart(tournaments) {
           labels: {
             color: '#e8d9c0',
             boxWidth: 12,
-            font: { family: 'Cinzel, serif', size: 11 },
+            font: { family: 'ClashRoyale, serif', size: 11 },
           },
         },
       },
       scales: {
         x: {
-          ticks: { color: '#8a7f6e', maxRotation: 45, font: { family: 'Cinzel, serif', size: 10 } },
+          ticks: { color: '#8a7f6e', maxRotation: 45, font: { family: 'ClashRoyale, serif', size: 10 } },
           grid: { color: 'rgba(255,255,255,0.05)' },
         },
         y: {
-          ticks: { color: '#8a7f6e', stepSize: 1, font: { family: 'Cinzel, serif', size: 10 } },
+          ticks: { color: '#8a7f6e', stepSize: 1, font: { family: 'ClashRoyale, serif', size: 10 } },
           grid: { color: 'rgba(255,255,255,0.05)' },
           beginAtZero: true,
         },
