@@ -13,6 +13,7 @@
         />
         <meta name="theme-color" content="#0a0f2e" />
         <title>Statistiche — Royal Arena</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
         <link rel="manifest" href="manifest.json" />
         <link rel="apple-touch-icon" href="images/ui/icon.png" />
         <link
@@ -27,7 +28,24 @@
         </header>
 
         <main>
-            <div id="stats-grid">
+            <div class="tabs">
+                <button
+                    class="tab-btn active"
+                    data-tab="giocatori"
+                    onclick="switchTab('giocatori')"
+                >
+                    GIOCATORI
+                </button>
+                <button
+                    class="tab-btn"
+                    data-tab="torneo"
+                    onclick="switchTab('torneo')"
+                >
+                    TORNEO
+                </button>
+            </div>
+
+            <div id="tab-content">
                 <p class="loading">Caricamento...</p>
             </div>
         </main>

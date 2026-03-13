@@ -913,3 +913,119 @@ body.page-home main {
   border-color: var(--red);
   color: var(--red);
 }
+
+/* ============================================================
+   STATISTICHE TORNEO
+   ============================================================ */
+.ts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.ts-card {
+  background: var(--bg2);
+  border: 1px solid var(--bg3);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.ts-name {
+  font-family: 'ClashRoyale', 'Cinzel', serif;
+  font-size: 16px;
+  color: var(--gold);
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.ts-podium {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ts-place {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--bg3);
+  border-radius: 8px;
+  padding: 8px 4px;
+  gap: 2px;
+}
+
+.ts-place-icon { font-size: 20px; }
+.ts-place-val  { font-family: 'ClashRoyale', 'Cinzel', serif; font-size: 20px; color: var(--text); font-weight: 700; }
+.ts-place-pct  { font-size: 11px; color: var(--muted); }
+
+.ts-matches { display: flex; flex-direction: column; gap: 0; }
+
+.ts-match-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--bg3);
+}
+.ts-match-row:last-child { border-bottom: none; }
+.ts-match-row.muted .ts-match-lbl,
+.ts-match-row.muted .ts-match-val { color: var(--muted); }
+
+.ts-match-lbl { color: var(--text); }
+.ts-match-val {
+  font-family: 'ClashRoyale', 'Cinzel', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+.ts-match-val.win  { color: #7ef7a0; }
+.ts-match-val.loss { color: #f77e7e; }
+
+.ts-chart-section {
+  background: var(--bg2);
+  border: 1px solid var(--bg3);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.ts-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.ts-chart-title {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.ts-filter-btns { display: flex; gap: 4px; }
+
+.ts-filter-btn {
+  background: var(--bg3);
+  border: 1px solid var(--bg3);
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: 'Cinzel', serif;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.ts-filter-btn.active {
+  background: var(--gold);
+  color: #0a0f2e;
+  border-color: var(--gold);
+}
+
+.ts-chart-wrap {
+  position: relative;
+  height: 220px;
+}
