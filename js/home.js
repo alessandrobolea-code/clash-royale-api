@@ -141,8 +141,8 @@ function renderMatchRows() {
         <span class="${m.winner_id === m.player1.id ? 'winner' : 'loser'}">${m.player1.username}</span>
         <span class="vs">vs</span>
         <span class="${m.winner_id === m.player2.id ? 'winner' : 'loser'}">${m.player2.username}</span>
+        <span class="crowns">${m.crowns_p1}-${m.crowns_p2} 👑</span>
       </span>
-      <span class="crowns">${m.crowns_p1}-${m.crowns_p2} 👑</span>
     </div>
   `).join('');
 }
@@ -197,7 +197,7 @@ function renderComplete(positions) {
         ${rows}
       </div>
       <div class="complete-footer">
-        <a href="classifiche.html" class="btn-link">Vedi classifiche →</a>
+        <a href="storico.html" class="btn-link">Vedi storico →</a>
       </div>
     </div>
   `;

@@ -48,6 +48,7 @@ body {
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
   touch-action: manipulation;
+  overflow-x: hidden;
 }
 
 /* ============================================================
@@ -620,15 +621,18 @@ body.page-home main {
 .match-players {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
-  font-size: 17px;
+  gap: 2px;
+  font-size: 16px;
+  min-width: 0;
 }
 
+.match-players span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .winner { color: var(--gold); font-weight: 600; }
 .loser  { color: var(--muted); }
-.vs     { color: var(--muted); font-size: 13px; }
-.crowns { font-size: 15px; white-space: nowrap; }
+.vs     { color: var(--muted); font-size: 11px; line-height: 1; }
+.crowns { font-size: 13px; white-space: nowrap; color: var(--muted); margin-top: 2px; }
 
 .active-footer {
   display: flex;
