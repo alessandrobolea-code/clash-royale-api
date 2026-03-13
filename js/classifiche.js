@@ -3,6 +3,8 @@
 // ============================================================
 
 let activeTab = 'classifica'; // 'classifica' | 'storico'
+let hideInvalid = false;
+let cachedTournaments = null;
 
 async function init() {
   switchTab(activeTab);
@@ -61,18 +63,38 @@ async function loadStorico() {
   content.innerHTML = '<p class="loading">Caricamento...</p>';
 
   try {
-    const tournaments = await getTournamentsHistory();
-
-    if (tournaments.length === 0) {
-      content.innerHTML = '<p class="empty-msg">Nessun torneo concluso.</p>';
-      return;
-    }
-
-    const cards = tournaments.map(t => renderTournamentCard(t)).join('');
-    content.innerHTML = `<div class="storico-list">${cards}</div>`;
+    if (!cachedTournaments) cachedTournaments = await getTournamentsHistory();
+    renderStorico();
   } catch (err) {
     content.innerHTML = `<p class="error-msg">Errore: ${err.message}</p>`;
   }
+}
+
+function renderStorico() {
+  const content = document.getElementById('tab-content');
+  const list = hideInvalid
+    ? cachedTournaments.filter(t => t.status !== 'invalid')
+    : cachedTournaments;
+
+  const toggleBtn = `
+    <div class="storico-toolbar">
+      <button class="toggle-invalid ${hideInvalid ? 'active' : ''}" onclick="toggleHideInvalid()">
+        ${hideInvalid ? 'Mostra annullati' : 'Nascondi annullati'}
+      </button>
+    </div>`;
+
+  if (list.length === 0) {
+    content.innerHTML = toggleBtn + '<p class="empty-msg">Nessun torneo concluso.</p>';
+    return;
+  }
+
+  const cards = list.map(t => renderTournamentCard(t)).join('');
+  content.innerHTML = toggleBtn + `<div class="storico-list">${cards}</div>`;
+}
+
+function toggleHideInvalid() {
+  hideInvalid = !hideInvalid;
+  renderStorico();
 }
 
 function renderTournamentCard(t) {
