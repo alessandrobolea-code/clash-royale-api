@@ -41,12 +41,6 @@ async function loadGiocatori() {
     return;
   }
 
-  let standingsMap = {};
-  try {
-    const standings = await getStandings();
-    standings.forEach(s => { standingsMap[s.player_id] = s.points; });
-  } catch (_) {}
-
   const grid = document.getElementById('stats-grid');
   grid.innerHTML = cachedPlayers.map(p => `
     <div class="stat-card" id="card-${p.id}">
@@ -60,14 +54,14 @@ async function loadGiocatori() {
     </div>
   `).join('');
 
-  await Promise.all(cachedPlayers.map(p => loadPlayerStats(p, standingsMap[p.id] ?? 0)));
+  await Promise.all(cachedPlayers.map(p => loadPlayerStats(p)));
 }
 
-async function loadPlayerStats(player, tournamentPoints) {
+async function loadPlayerStats(player) {
   const cardBody = document.querySelector(`#card-${player.id} .card-body`);
   try {
     const data = await fetchCRPlayer(player.cr_tag);
-    cardBody.innerHTML = renderStats(data, tournamentPoints);
+    cardBody.innerHTML = renderStats(data);
     cardBody.classList.remove('loading-inline');
   } catch (err) {
     cardBody.innerHTML = `<p class="error-inline">Errore API: ${err.message}</p>`;
@@ -84,7 +78,7 @@ async function fetchCRPlayer(crTag) {
   return res.json();
 }
 
-function renderStats(d, tournamentPoints) {
+function renderStats(d) {
   const winRate = d.battleCount > 0
     ? Math.round((d.wins / d.battleCount) * 100)
     : 0;
@@ -130,18 +124,13 @@ function renderStats(d, tournamentPoints) {
         <div class="stat-box-lbl">3 Corone</div>
       </div>
       <div class="stat-box highlight">
-        <div class="stat-box-val">${tournamentPoints} pt</div>
-        <div class="stat-box-lbl">Torneo</div>
+        <div class="stat-box-val">${d.battleCount.toLocaleString('it-IT')}</div>
+        <div class="stat-box-lbl">Partite</div>
       </div>
     </div>
 
     ${arenaHtml}
     ${clanHtml}
-
-    <div class="stat-row muted">
-      <span class="stat-lbl">Partite totali</span>
-      <span class="stat-val">${d.battleCount.toLocaleString('it-IT')}</span>
-    </div>
   `;
 }
 
@@ -161,9 +150,14 @@ async function loadTournamentStats() {
   const content = document.getElementById('tab-content');
   content.innerHTML = '<p class="loading">Caricamento...</p>';
 
+  let standingsMap = {};
   try {
-    if (!cachedPlayers) cachedPlayers = await getPlayers();
-    if (!cachedTournaments) cachedTournaments = await getTournamentsHistory();
+    const [, , standings] = await Promise.all([
+      cachedPlayers ? null : getPlayers().then(d => { cachedPlayers = d; }),
+      cachedTournaments ? null : getTournamentsHistory().then(d => { cachedTournaments = d; }),
+      getStandings(),
+    ]);
+    standings.forEach(s => { standingsMap[s.player_id] = s.points; });
   } catch (err) {
     content.innerHTML = `<p class="error-msg">Errore: ${err.message}</p>`;
     return;
@@ -176,10 +170,10 @@ async function loadTournamentStats() {
     return;
   }
 
-  renderTournamentStats(finished);
+  renderTournamentStats(finished, standingsMap);
 }
 
-function computePlayerTournamentStats(players, tournaments) {
+function computePlayerTournamentStats(players, tournaments, standingsMap = {}) {
   const stats = {};
   players.forEach(p => {
     stats[p.username] = {
@@ -190,6 +184,7 @@ function computePlayerTournamentStats(players, tournaments) {
       wins: 0,
       losses: 0,
       tournamentsPlayed: 0,
+      points: standingsMap[p.id] ?? 0,
     };
   });
 
@@ -225,9 +220,9 @@ function computePlayerTournamentStats(players, tournaments) {
   return Object.values(stats).filter(s => s.tournamentsPlayed > 0);
 }
 
-function renderTournamentStats(finished) {
+function renderTournamentStats(finished, standingsMap = {}) {
   const content = document.getElementById('tab-content');
-  const playerStats = computePlayerTournamentStats(cachedPlayers, finished);
+  const playerStats = computePlayerTournamentStats(cachedPlayers, finished, standingsMap);
   playerStats.sort((a, b) => b.firstPlaces - a.firstPlaces || b.wins - a.wins);
 
   const cards = playerStats.map(s => {
@@ -262,6 +257,10 @@ function renderTournamentStats(finished) {
             <div class="ts-match-row">
               <span class="ts-match-lbl">Partite perse</span>
               <span class="ts-match-val loss">${s.losses}</span>
+            </div>
+            <div class="ts-match-row highlight">
+              <span class="ts-match-lbl">Punti torneo</span>
+              <span class="ts-match-val gold">${s.points} pt</span>
             </div>
             <div class="ts-match-row muted">
               <span class="ts-match-lbl">Tornei disputati</span>

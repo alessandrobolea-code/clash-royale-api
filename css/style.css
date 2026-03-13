@@ -983,6 +983,7 @@ body.page-home main {
 }
 .ts-match-val.win  { color: #7ef7a0; }
 .ts-match-val.loss { color: #f77e7e; }
+.ts-match-val.gold { color: var(--gold); }
 
 .ts-chart-section {
   background: var(--bg2);
