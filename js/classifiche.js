@@ -1,62 +1,13 @@
 // ============================================================
-// CLASSIFICHE — logica
+// STORICO TORNEI
 // ============================================================
 
-let activeTab = 'classifica'; // 'classifica' | 'storico'
 let hideInvalid = true;
 let cachedTournaments = null;
 
 async function init() {
-  switchTab(activeTab);
+  await loadStorico();
 }
-
-// ============================================================
-// TAB
-// ============================================================
-
-function switchTab(tab) {
-  activeTab = tab;
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.tab === tab);
-  });
-  if (tab === 'classifica') loadClassifica();
-  else loadStorico();
-}
-
-// ============================================================
-// CLASSIFICA
-// ============================================================
-
-async function loadClassifica() {
-  const content = document.getElementById('tab-content');
-  content.innerHTML = '<p class="loading">Caricamento...</p>';
-
-  try {
-    const standings = await getStandings();
-
-    if (standings.length === 0) {
-      content.innerHTML = '<p class="empty-msg">Ancora nessuna partita giocata.</p>';
-      return;
-    }
-
-    const medals = ['🥇', '🥈', '🥉'];
-    const rows = standings.map((s, i) => `
-      <div class="leaderboard-row rank-${Math.min(i + 1, 4)}">
-        <span class="lb-rank">${medals[i] || (i + 1)}</span>
-        <span class="lb-name">${s.players.username}</span>
-        <span class="lb-pts">${s.points} pt</span>
-      </div>
-    `).join('');
-
-    content.innerHTML = `<div class="leaderboard">${rows}</div>`;
-  } catch (err) {
-    content.innerHTML = `<p class="error-msg">Errore: ${err.message}</p>`;
-  }
-}
-
-// ============================================================
-// STORICO TORNEI
-// ============================================================
 
 async function loadStorico() {
   const content = document.getElementById('tab-content');
@@ -125,10 +76,5 @@ function renderTournamentCard(t) {
     </div>
   `;
 }
-
-
-// ============================================================
-// START
-// ============================================================
 
 document.addEventListener('DOMContentLoaded', init);
