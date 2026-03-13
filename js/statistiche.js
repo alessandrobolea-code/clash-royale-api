@@ -406,18 +406,17 @@ function drawChart(tournaments) {
         legend: {
           labels: {
             color: '#e8d9c0',
-            font: { family: 'Cinzel, serif', size: 11 },
             boxWidth: 12,
           },
         },
       },
       scales: {
         x: {
-          ticks: { color: '#8a7f6e', font: { size: 10 }, maxRotation: 45 },
+          ticks: { color: '#8a7f6e', maxRotation: 45 },
           grid: { color: 'rgba(255,255,255,0.05)' },
         },
         y: {
-          ticks: { color: '#8a7f6e', font: { size: 10 }, stepSize: 1 },
+          ticks: { color: '#8a7f6e', stepSize: 1 },
           grid: { color: 'rgba(255,255,255,0.05)' },
           beginAtZero: true,
         },
