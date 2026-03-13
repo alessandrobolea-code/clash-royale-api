@@ -229,14 +229,16 @@ function renderTournamentStats(finished, standingsMap = {}) {
   const playerStats = computePlayerTournamentStats(cachedPlayers, finished, standingsMap);
   playerStats.sort((a, b) => b.firstPlaces - a.firstPlaces || b.wins - a.wins);
 
-  const cards = playerStats.map(s => {
+  const medals = ['🥇', '🥈', '🥉'];
+  const cards = playerStats.map((s, i) => {
     const n = s.tournamentsPlayed;
     const pct = v => n > 0 ? Math.round((v / n) * 100) : 0;
+    const medal = medals[i] ?? '';
     return `
       <div class="ts-card">
         <div class="ts-name" onclick="toggleCard(this)">
-          <span>${s.username}</span>
-          <span class="card-chevron">▾</span>
+          <span class="ts-name-left">${medal ? `<span class="ts-medal">${medal}</span>` : ''}<span>${s.username}</span></span>
+          <span class="ts-name-right"><span class="ts-pts-preview">${s.points} pt</span><span class="card-chevron">▾</span></span>
         </div>
         <div class="ts-body">
           <div class="ts-podium">

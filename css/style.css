@@ -958,6 +958,16 @@ body.page-home main {
 }
 .ts-card.expanded .ts-name .card-chevron { transform: rotate(180deg); }
 
+.ts-name-left  { display: flex; align-items: center; gap: 6px; }
+.ts-name-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.ts-medal      { font-size: 18px; line-height: 1; }
+.ts-pts-preview {
+  font-family: 'ClashRoyale', 'Cinzel', serif;
+  font-size: 13px;
+  color: var(--gold);
+  opacity: 0.85;
+}
+
 .ts-body { display: none; padding: 16px; }
 .ts-card.expanded .ts-body { display: block; }
 
