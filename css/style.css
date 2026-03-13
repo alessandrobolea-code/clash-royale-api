@@ -130,6 +130,9 @@ main {
   border-top: 2px solid var(--bg3);
   padding: 10px 0 max(10px, env(safe-area-inset-bottom));
   z-index: 50;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 /* Fix banda blu iOS PWA su pagine non-scrollabili:
