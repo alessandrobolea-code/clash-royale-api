@@ -1,7 +1,7 @@
 // Service Worker — Royal Arena
 // Cache-first per i file statici, network-first per le API
 
-const CACHE_NAME = 'royal-arena-v25';
+const CACHE_NAME = 'royal-arena-v26';
 
 const STATIC_ASSETS = [
   './',
