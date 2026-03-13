@@ -350,6 +350,9 @@ function drawChart(tournaments) {
   const canvas = document.getElementById('ts-chart');
   if (!canvas) return;
 
+  Chart.defaults.font.family = 'Cinzel, serif';
+  Chart.defaults.font.size = 10;
+
   const now = new Date();
   let cutoff = null;
   if (chartFilter === '1m') cutoff = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
