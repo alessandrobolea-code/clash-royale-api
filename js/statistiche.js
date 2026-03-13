@@ -12,6 +12,10 @@ async function init() {
   switchTab(activeTab);
 }
 
+function toggleCard(header) {
+  header.closest('.stat-card, .ts-card').classList.toggle('expanded');
+}
+
 function switchTab(tab) {
   activeTab = tab;
   document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -44,9 +48,9 @@ async function loadGiocatori() {
   const grid = document.getElementById('stats-grid');
   grid.innerHTML = cachedPlayers.map(p => `
     <div class="stat-card" id="card-${p.id}">
-      <div class="card-top">
+      <div class="card-top" onclick="toggleCard(this)">
         <div class="card-name">${p.username}</div>
-        <div class="card-tag">${p.cr_tag}</div>
+        <span class="card-chevron">▾</span>
       </div>
       <div class="card-body loading-inline">
         <span class="spinner"></span> Caricamento...
@@ -230,7 +234,10 @@ function renderTournamentStats(finished, standingsMap = {}) {
     const pct = v => n > 0 ? Math.round((v / n) * 100) : 0;
     return `
       <div class="ts-card">
-        <div class="ts-name">${s.username}</div>
+        <div class="ts-name" onclick="toggleCard(this)">
+          <span>${s.username}</span>
+          <span class="card-chevron">▾</span>
+        </div>
         <div class="ts-body">
           <div class="ts-podium">
             <div class="ts-place">

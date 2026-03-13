@@ -713,9 +713,15 @@ body.page-home main {
 
 .card-top {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  padding: 14px 16px 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.stat-card.expanded .card-top {
+  padding-bottom: 10px;
   border-bottom: 1px solid var(--bg3);
 }
 
@@ -724,13 +730,16 @@ body.page-home main {
   font-size: 17px;
   color: var(--gold);
 }
-.card-tag {
-  font-family: 'ClashRoyale', 'Cinzel', serif;
-  font-size: 11px;
+.card-chevron {
   color: var(--muted);
-  letter-spacing: 1px;
+  font-size: 16px;
+  transition: transform .2s;
+  display: inline-block;
 }
-.card-body { padding: 14px 16px; }
+.stat-card.expanded .card-chevron { transform: rotate(180deg); }
+
+.card-body { display: none; padding: 14px 16px; }
+.stat-card.expanded .card-body { display: block; }
 
 .loading-inline {
   display: flex;
@@ -928,16 +937,29 @@ body.page-home main {
   background: var(--bg2);
   border: 1px solid var(--bg3);
   border-radius: 12px;
-  padding: 16px;
+  overflow: hidden;
 }
 
 .ts-name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-family: 'ClashRoyale', 'Cinzel', serif;
   font-size: 16px;
   color: var(--gold);
-  margin-bottom: 12px;
   font-weight: 700;
+  padding: 14px 16px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
+.ts-card.expanded .ts-name {
+  border-bottom: 1px solid var(--bg3);
+}
+.ts-card.expanded .ts-name .card-chevron { transform: rotate(180deg); }
+
+.ts-body { display: none; padding: 16px; }
+.ts-card.expanded .ts-body { display: block; }
 
 .ts-podium {
   display: flex;
